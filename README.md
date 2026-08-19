@@ -1,1 +1,1 @@
-# Maupuescuela_Grupo_7
+# Mapuescuela_Grupo_7
