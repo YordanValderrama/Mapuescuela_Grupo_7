@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2026.1.1" design:palette="flowable-work-process-palette">
+  <collaboration id="Collaboration">
+    <participant id="Pool_1" name="Mapuescuela" processRef="procesoDeVentaMauescuelaTOBE"></participant>
+  </collaboration>
+  <process id="procesoDeVentaMauescuelaTOBE" name="Proceso de venta Mauescuela TO-BE" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
+    <documentation>Proceso central de negocio de Mapuescuela: gestiona el pago, la validación del
+    comprobante, el vencimiento del plazo de 24 horas, la actualización de inventario y la
+    entrega (retiro o despacho) de un pedido ya generado por la aplicación web.</documentation>
+    <extensionElements>
+      <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
+      <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
+      <design:creationdate><![CDATA[2026-08-21T01:52:27.908Z]]></design:creationdate>
+      <design:description><![CDATA[Proceso central de negocio de Mapuescuela: gestiona el pago, la validación del
+    comprobante, el vencimiento del plazo de 24 horas, la actualización de inventario y la
+    entrega (retiro o despacho) de un pedido ya generado por la aplicación web.]]></design:description>
+      <design:modificationdate><![CDATA[2026-08-27T02:37:48.645Z]]></design:modificationdate>
+    </extensionElements>
+    <laneSet id="laneSet_procesoDeVentaMauescuelaTOBE">
+      <lane id="cliente" name="Cliente">
+        <flowNodeRef>boundary_timer_24h</flowNodeRef>
+        <flowNodeRef>f_timer</flowNodeRef>
+        <flowNodeRef>ut_cargar_comprobante</flowNodeRef>
+        <flowNodeRef>ut_datos_personales_modalidad_entrega</flowNodeRef>
+        <flowNodeRef>reenviar_comprobante</flowNodeRef>
+        <flowNodeRef>startnoneevent1</flowNodeRef>
+        <flowNodeRef>f3</flowNodeRef>
+        <flowNodeRef>f2</flowNodeRef>
+        <flowNodeRef>SequenceFlow_49</flowNodeRef>
+        <flowNodeRef>SequenceFlow_48</flowNodeRef>
+        <flowNodeRef>f1</flowNodeRef>
+      </lane>
+      <lane id="Lane_47" name="Web service">
+        <flowNodeRef>st_cancelar_pedido_vencido</flowNodeRef>
+        <flowNodeRef>cancelarPedido</flowNodeRef>
+        <flowNodeRef>notificarPago</flowNodeRef>
+        <flowNodeRef>st_actualizar_inventario</flowNodeRef>
+        <flowNodeRef>st_notificar_rechazo</flowNodeRef>
+        <flowNodeRef>nPedido</flowNodeRef>
+        <flowNodeRef>nofificarEstado</flowNodeRef>
+        <flowNodeRef>end_cancelado_vencimiento</flowNodeRef>
+        <flowNodeRef>end_pago_rechazado</flowNodeRef>
+        <flowNodeRef>f15</flowNodeRef>
+        <flowNodeRef>SequenceFlow_51</flowNodeRef>
+        <flowNodeRef>SequenceFlow_38</flowNodeRef>
+        <flowNodeRef>f8</flowNodeRef>
+        <flowNodeRef>SequenceFlow_50</flowNodeRef>
+        <flowNodeRef>SequenceFlow_52</flowNodeRef>
+        <flowNodeRef>SequenceFlow_46</flowNodeRef>
+      </lane>
+      <lane id="Lane_3" name="Voluntario">
+        <flowNodeRef>registraInformacionDespacho</flowNodeRef>
+        <flowNodeRef>ut_registrar_retiro</flowNodeRef>
+        <flowNodeRef>ut_revisar_comprobante</flowNodeRef>
+        <flowNodeRef>ut_preparar_retiro</flowNodeRef>
+        <flowNodeRef>ut_preparar_despacho</flowNodeRef>
+        <flowNodeRef>gw_pago_aprobado</flowNodeRef>
+        <flowNodeRef>gw_modalidad_entrega</flowNodeRef>
+        <flowNodeRef>end_finalizado_retiro</flowNodeRef>
+        <flowNodeRef>end_finalizado_despacho</flowNodeRef>
+        <flowNodeRef>f14</flowNodeRef>
+        <flowNodeRef>f11</flowNodeRef>
+        <flowNodeRef>f141</flowNodeRef>
+        <flowNodeRef>SequenceFlow_36</flowNodeRef>
+        <flowNodeRef>f13</flowNodeRef>
+        <flowNodeRef>f5</flowNodeRef>
+        <flowNodeRef>f7</flowNodeRef>
+        <flowNodeRef>SequenceFlow_47</flowNodeRef>
+        <flowNodeRef>f9</flowNodeRef>
+        <flowNodeRef>f12</flowNodeRef>
+      </lane>
+    </laneSet>
+    <boundaryEvent id="boundary_timer_24h" name="Vencimiento 24h" attachedToRef="ut_cargar_comprobante" cancelActivity="true">
+      <extensionElements>
+        <design:stencilid><![CDATA[IntermediateTimerEventBoundary]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <timerEventDefinition>
+        <timeDuration>PT24H</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="f_timer" sourceRef="boundary_timer_24h" targetRef="st_cancelar_pedido_vencido">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <userTask id="ut_cargar_comprobante" name="Cliente carga comprobante de transferencia" flowable:assignee="${initiator}" flowable:candidateUsers="&lt;userTask id=&quot;uploadReceiptTask&quot; name=&quot;Cliente carga comprobante&quot; flowable:candidateUsers=&quot;${initiator}&quot;/&gt;" flowable:formKey="form_cargar_comprobante" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="ut_datos_personales_modalidad_entrega" name="Ingresa datos personales y modalida de entrega" flowable:assignee="${initiator}" flowable:formKey="form_datos_personales_modalidad_entrega" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="reenviar_comprobante" name="Reenviar comprobante" flowable:assignee="${initiator}" flowable:formKey="reenviarTransferencia" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <startEvent id="startnoneevent1" flowable:initiator="initiator" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+      </extensionElements>
+    </startEvent>
+    <sequenceFlow id="f3" sourceRef="ut_cargar_comprobante" targetRef="ut_revisar_comprobante">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f2" sourceRef="ut_datos_personales_modalidad_entrega" targetRef="ut_cargar_comprobante">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_49" sourceRef="ut_datos_personales_modalidad_entrega" targetRef="nPedido">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_48" sourceRef="reenviar_comprobante" targetRef="ut_revisar_comprobante">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f1" sourceRef="startnoneevent1" targetRef="ut_datos_personales_modalidad_entrega">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <serviceTask id="st_cancelar_pedido_vencido" name="Cancelar pedido y liberar stock (web servide Java)" flowable:type="external-worker" flowable:topic="cancelar-pedido-vencido">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="cancelarPedido" name="Cancelar pedido y liberar stock (web servide Java)" flowable:type="external-worker" flowable:topic="anular-pedido-rechazado">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="notificarPago" name="Notificar pago aprobado al cliente" flowable:type="external-worker" flowable:topic="notificar-pago-aprobado">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="st_actualizar_inventario" name="Actualizar inventario (Web Service Java)" flowable:type="external-worker" flowable:topic="actualizar-inventario">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="st_notificar_rechazo" name="Notificar rechazo al cliente" flowable:type="external-worker" flowable:topic="notificar-rechazo">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="nPedido" name="Generar numero pedido" flowable:type="external-worker" flowable:topic="generar-numero-pedido">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="nofificarEstado" name="notificar estado del pago al cliente" flowable:type="external-worker" flowable:topic="notificar-pago-pendiente">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="end_cancelado_vencimiento" name="Pedido Cancelado (vencimiento)">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <endEvent id="end_pago_rechazado" name="pedido Anulado">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="f15" sourceRef="st_cancelar_pedido_vencido" targetRef="end_cancelado_vencimiento">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_51" sourceRef="cancelarPedido" targetRef="end_pago_rechazado">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_38" sourceRef="notificarPago" targetRef="st_actualizar_inventario">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f8" sourceRef="st_actualizar_inventario" targetRef="gw_modalidad_entrega">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_50" sourceRef="st_notificar_rechazo" targetRef="cancelarPedido">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_52" sourceRef="nPedido" targetRef="ut_cargar_comprobante">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_46" sourceRef="nofificarEstado" targetRef="reenviar_comprobante">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <userTask id="registraInformacionDespacho" name="Voluntario registra información de despacho" flowable:candidateGroups="voluntarios" flowable:formKey="form_registrar_despacho" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="ut_registrar_retiro" name="Voluntario registra retiro efectuado" flowable:candidateGroups="voluntarios" flowable:formKey="form_registrar_retiro" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="ut_revisar_comprobante" name="Voluntario revisa comprobante" flowable:candidateGroups="voluntarios" flowable:formKey="form_revisar_comprobante" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <manualTask id="ut_preparar_retiro" name="Voluntario prepara pedido para retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[ManualTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </manualTask>
+    <manualTask id="ut_preparar_despacho" name="Voluntario prepara pedido para despacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[ManualTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </manualTask>
+    <exclusiveGateway id="gw_pago_aprobado" name="¿Pago aprobado?" default="f5">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <exclusiveGateway id="gw_modalidad_entrega" name="¿modalidad de entrega?">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <endEvent id="end_finalizado_retiro" name="Pedido finalizado (retirado)">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <endEvent id="end_finalizado_despacho" name="Pedido finalizado (despacho)">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="f14" sourceRef="registraInformacionDespacho" targetRef="end_finalizado_despacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f11" sourceRef="ut_registrar_retiro" targetRef="end_finalizado_retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f141" sourceRef="ut_revisar_comprobante" targetRef="gw_pago_aprobado">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_36" sourceRef="ut_preparar_retiro" targetRef="ut_registrar_retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f13" sourceRef="ut_preparar_despacho" targetRef="registraInformacionDespacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f5" name="Rachazo" sourceRef="gw_pago_aprobado" targetRef="st_notificar_rechazo">
+      <extensionElements>
+        <flowable:is-default-flow><![CDATA[true]]></flowable:is-default-flow>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f7" name="aprobado" sourceRef="gw_pago_aprobado" targetRef="notificarPago">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'pago_aprobado'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_47" name="error de comprobante" sourceRef="gw_pago_aprobado" targetRef="nofificarEstado">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'error_comprobante'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="f9" name="RETIRO" sourceRef="gw_modalidad_entrega" targetRef="ut_preparar_retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${seleccioneModalidadDeEntrega == 'retiro_tienda'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="f12" name="DESPACHO" sourceRef="gw_modalidad_entrega" targetRef="ut_preparar_despacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${seleccioneModalidadDeEntrega == 'reparto_domicilio'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="Pool_1" id="BPMNShape_Pool_1">
+        <omgdc:Bounds height="990.0" width="1984.0" x="162.0" y="54.20001220703125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cliente" id="BPMNShape_cliente">
+        <omgdc:Bounds height="349.0" width="1954.0" x="192.0" y="54.20001220703125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundary_timer_24h" id="BPMNShape_boundary_timer_24h">
+        <omgdc:Bounds height="30.0" width="30.0" x="924.9375127890322" y="173.45735311147155"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="93.0" x="959.5375127890322" y="158.45735311147155"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ut_cargar_comprobante" id="BPMNShape_ut_cargar_comprobante">
+        <omgdc:Bounds height="78.0" width="169.0" x="770.9375127890322" y="149.4573531114716"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ut_datos_personales_modalidad_entrega" id="BPMNShape_ut_datos_personales_modalidad_entrega">
+        <omgdc:Bounds height="76.0" width="155.0" x="342.1265314116611" y="150.4573531114716"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reenviar_comprobante" id="BPMNShape_reenviar_comprobante">
+        <omgdc:Bounds height="51.0" width="123.0" x="659.732639124538" y="340.5036963152712"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startnoneevent1" id="BPMNShape_startnoneevent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="229.07563433599347" y="173.4573531114716"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Lane_47" id="BPMNShape_Lane_47">
+        <omgdc:Bounds height="306.0" width="1954.0" x="192.0" y="403.20001220703125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="st_cancelar_pedido_vencido" id="BPMNShape_st_cancelar_pedido_vencido">
+        <omgdc:Bounds height="88.0" width="175.0" x="1085.5184273409911" y="407.5291763158915"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancelarPedido" id="BPMNShape_cancelarPedido">
+        <omgdc:Bounds height="78.0" width="174.0" x="1274.3402277534651" y="495.2696356979254"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notificarPago" id="BPMNShape_notificarPago">
+        <omgdc:Bounds height="70.0" width="148.0" x="1011.1790197218631" y="618.2215938386597"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="st_actualizar_inventario" id="BPMNShape_st_actualizar_inventario">
+        <omgdc:Bounds height="80.0" width="100.0" x="1243.995616831427" y="613.2215938386597"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="st_notificar_rechazo" id="BPMNShape_st_notificar_rechazo">
+        <omgdc:Bounds height="80.0" width="100.0" x="942.8659979490998" y="494.2696356979254"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="nPedido" id="BPMNShape_nPedido">
+        <omgdc:Bounds height="80.0" width="100.0" x="458.35149449134343" y="416.6072874754923"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="nofificarEstado" id="BPMNShape_nofificarEstado">
+        <omgdc:Bounds height="80.0" width="100.0" x="565.1756488302299" y="523.9129964994333"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_cancelado_vencimiento" id="BPMNShape_end_cancelado_vencimiento">
+        <omgdc:Bounds height="28.0" width="28.0" x="1420.3461095206678" y="437.5291763158915"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="176.0" x="1357.4633149011438" y="470.40642124083826"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_pago_rechazado" id="BPMNShape_end_pago_rechazado">
+        <omgdc:Bounds height="28.0" width="28.0" x="1621.283423846274" y="520.2696356979254"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="85.0" x="1597.6175171284806" y="568.693582733705"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Lane_3" id="BPMNShape_Lane_3">
+        <omgdc:Bounds height="335.0" width="1954.0" x="192.0" y="709.2000122070312"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="registraInformacionDespacho" id="BPMNShape_registraInformacionDespacho">
+        <omgdc:Bounds height="80.0" width="160.0" x="1899.6130071585355" y="713.9254274386598"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ut_registrar_retiro" id="BPMNShape_ut_registrar_retiro">
+        <omgdc:Bounds height="79.0" width="136.0" x="1606.917780366597" y="897.5042743553558"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ut_revisar_comprobante" id="BPMNShape_ut_revisar_comprobante">
+        <omgdc:Bounds height="63.0" width="160.0" x="776.231430325353" y="764.833924447437"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ut_preparar_retiro" id="BPMNShape_ut_preparar_retiro">
+        <omgdc:Bounds height="80.0" width="100.0" x="1413.0801263858164" y="897.0042743553558"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ut_preparar_despacho" id="BPMNShape_ut_preparar_despacho">
+        <omgdc:Bounds height="80.0" width="100.0" x="1654.2222918092" y="713.9254274386598"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gw_pago_aprobado" id="BPMNShape_gw_pago_aprobado">
+        <omgdc:Bounds height="40.0" width="40.0" x="836.231430325353" y="940.7538139501992"></omgdc:Bounds>
+        <bpmndi:BPMNLabel flowable:rotation="270.0">
+          <omgdc:Bounds height="18.0" width="96.0" x="785.5541507355069" y="878.2430865261637"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="gw_modalidad_entrega" id="BPMNShape_gw_modalidad_entrega">
+        <omgdc:Bounds height="40.0" width="40.0" x="1443.0801263858164" y="733.9254274386598"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="132.0" x="1406.8452020944428" y="711.8928094517579"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_finalizado_retiro" id="BPMNShape_end_finalizado_retiro">
+        <omgdc:Bounds height="28.0" width="28.0" x="1839.1782651661376" y="923.0042743553558"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="147.0" x="1805.36674952116" y="964.444133846753"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_finalizado_despacho" id="BPMNShape_end_finalizado_despacho">
+        <omgdc:Bounds height="28.0" width="28.0" x="2007.6308044565826" y="863.2899221290762"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="158.0" x="1945.5646185149099" y="911.559768772782"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="f_timer" id="BPMNEdge_f_timer" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="88.0" flowable:targetDockerY="44.0">
+        <omgdi:waypoint x="954.9375127890322" y="188.45735311147155"></omgdi:waypoint>
+        <omgdi:waypoint x="1173.0184273409911" y="188.45735311147155"></omgdi:waypoint>
+        <omgdi:waypoint x="1173.0184273409911" y="407.5291763158915"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_48" id="BPMNEdge_SequenceFlow_48" flowable:sourceDockerX="62.0" flowable:sourceDockerY="26.0" flowable:targetDockerX="80.0" flowable:targetDockerY="32.0">
+        <omgdi:waypoint x="721.232639124538" y="391.5036963152712"></omgdi:waypoint>
+        <omgdi:waypoint x="721.232639124538" y="796.333924447437"></omgdi:waypoint>
+        <omgdi:waypoint x="776.231430325353" y="796.333924447437"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_49" id="BPMNEdge_SequenceFlow_49" flowable:sourceDockerX="78.0" flowable:sourceDockerY="38.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="419.6265314116611" y="226.4573531114716"></omgdi:waypoint>
+        <omgdi:waypoint x="419.6265314116611" y="456.6072874754923"></omgdi:waypoint>
+        <omgdi:waypoint x="458.35149449134343" y="456.6072874754923"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_38" id="BPMNEdge_SequenceFlow_38" flowable:sourceDockerX="74.0" flowable:sourceDockerY="35.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1159.1790197218631" y="653.2215938386597"></omgdi:waypoint>
+        <omgdi:waypoint x="1243.995616831427" y="653.2215938386597"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_46" id="BPMNEdge_SequenceFlow_46" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="62.0" flowable:targetDockerY="26.0">
+        <omgdi:waypoint x="621.1756488302299" y="523.9129964994333"></omgdi:waypoint>
+        <omgdi:waypoint x="621.1756488302299" y="366.0036963152712"></omgdi:waypoint>
+        <omgdi:waypoint x="659.732639124538" y="366.0036963152712"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f12" id="BPMNEdge_f12" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1483.0801263858164" y="753.9254274386598"></omgdi:waypoint>
+        <omgdi:waypoint x="1654.2222918092" y="753.9254274386598"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="63.0" x="1534.2776461266258" y="766.6646177790185"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f11" id="BPMNEdge_f11" flowable:sourceDockerX="68.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="1742.917780366597" y="937.0042743553558"></omgdi:waypoint>
+        <omgdi:waypoint x="1839.1782651661376" y="937.0042743553558"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f141" id="BPMNEdge_f141" flowable:sourceDockerX="80.0" flowable:sourceDockerY="32.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="856.231430325353" y="827.833924447437"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="940.7538139501992"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_36" id="BPMNEdge_SequenceFlow_36" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="68.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1513.0801263858164" y="937.0042743553558"></omgdi:waypoint>
+        <omgdi:waypoint x="1606.917780366597" y="937.0042743553558"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_47" id="BPMNEdge_SequenceFlow_47" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="836.231430325353" y="960.7538139501992"></omgdi:waypoint>
+        <omgdi:waypoint x="621.1756488302299" y="960.7538139501994"></omgdi:waypoint>
+        <omgdi:waypoint x="621.1756488302299" y="593.9129964994333"></omgdi:waypoint>
+        <bpmndi:BPMNLabel flowable:rotation="270.0">
+          <omgdc:Bounds height="18.0" width="119.0" x="540.0124479912691" y="840.8264377480307"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f14" id="BPMNEdge_f14" flowable:sourceDockerX="80.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="2019.6130071585355" y="793.9254274386598"></omgdi:waypoint>
+        <omgdi:waypoint x="2021.2920404431486" y="863.2940213383731"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f13" id="BPMNEdge_f13" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="80.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1754.2222918092" y="753.9254274386598"></omgdi:waypoint>
+        <omgdi:waypoint x="1899.6130071585355" y="753.9254274386598"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f1" id="BPMNEdge_f1" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="78.0" flowable:targetDockerY="38.0">
+        <omgdi:waypoint x="259.07563433599347" y="188.4573531114716"></omgdi:waypoint>
+        <omgdi:waypoint x="342.1265314116611" y="188.4573531114716"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f15" id="BPMNEdge_f15" flowable:sourceDockerX="88.0" flowable:sourceDockerY="44.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="1260.5184273409911" y="451.52917631611183"></omgdi:waypoint>
+        <omgdi:waypoint x="1420.3461095206678" y="451.5291763158915"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f2" id="BPMNEdge_f2" flowable:sourceDockerX="78.0" flowable:sourceDockerY="38.0" flowable:targetDockerX="85.0" flowable:targetDockerY="39.0">
+        <omgdi:waypoint x="497.1265314116611" y="188.4573531114716"></omgdi:waypoint>
+        <omgdi:waypoint x="770.9375127890322" y="188.4573531114716"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f3" id="BPMNEdge_f3" flowable:sourceDockerX="85.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="80.0" flowable:targetDockerY="32.0">
+        <omgdi:waypoint x="855.4375127890322" y="227.4573531114716"></omgdi:waypoint>
+        <omgdi:waypoint x="855.4375127890322" y="496.14563877945426"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="496.14563877945426"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="764.833924447437"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f5" id="BPMNEdge_f5" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="876.231430325353" y="960.7538139501992"></omgdi:waypoint>
+        <omgdi:waypoint x="993.2238862241152" y="960.7538139501992"></omgdi:waypoint>
+        <omgdi:waypoint x="992.9305748883829" y="574.2696356979254"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="47.0" x="919.832284109897" y="908.9018957602802"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f7" id="BPMNEdge_f7" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="74.0" flowable:targetDockerY="35.0">
+        <omgdi:waypoint x="856.231430325353" y="980.7538139501992"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="1014.1306564864967"></omgdi:waypoint>
+        <omgdi:waypoint x="1085.1790197218631" y="1014.1306564864967"></omgdi:waypoint>
+        <omgdi:waypoint x="1085.1790197218631" y="688.2215938386597"></omgdi:waypoint>
+        <bpmndi:BPMNLabel flowable:rotation="270.0">
+          <omgdc:Bounds height="18.0" width="52.0" x="1042.812595207239" y="855.3809861060378"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f8" id="BPMNEdge_f8" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="1343.995616831427" y="653.4966498370002"></omgdi:waypoint>
+        <omgdi:waypoint x="1397.4245596151695" y="653.2215938386597"></omgdi:waypoint>
+        <omgdi:waypoint x="1397.4245596151695" y="753.9254274386598"></omgdi:waypoint>
+        <omgdi:waypoint x="1443.0801263858164" y="753.9254274386598"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f9" id="BPMNEdge_f9" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1463.0801263858164" y="773.9254274386598"></omgdi:waypoint>
+        <omgdi:waypoint x="1463.0801263858164" y="897.0042743553558"></omgdi:waypoint>
+        <bpmndi:BPMNLabel flowable:rotation="270.0">
+          <omgdc:Bounds height="18.0" width="41.0" x="1423.5357363046492" y="823.32887016153"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_51" id="BPMNEdge_SequenceFlow_51" flowable:sourceDockerX="87.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="1448.3402277534651" y="534.2694862950303"></omgdi:waypoint>
+        <omgdi:waypoint x="1621.283423846274" y="534.2696356979254"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_52" id="BPMNEdge_SequenceFlow_52" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="85.0" flowable:targetDockerY="39.0">
+        <omgdi:waypoint x="533.3514944913434" y="416.6072874754923"></omgdi:waypoint>
+        <omgdi:waypoint x="533.0298673457643" y="276.9569096517822"></omgdi:waypoint>
+        <omgdi:waypoint x="812.5436795004604" y="276.9569096517822"></omgdi:waypoint>
+        <omgdi:waypoint x="813.1875127890322" y="227.4573531114716"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_50" id="BPMNEdge_SequenceFlow_50" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="87.0" flowable:targetDockerY="39.0">
+        <omgdi:waypoint x="1042.8659979491" y="534.2696356979254"></omgdi:waypoint>
+        <omgdi:waypoint x="1274.3402277534651" y="534.2696356979254"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
