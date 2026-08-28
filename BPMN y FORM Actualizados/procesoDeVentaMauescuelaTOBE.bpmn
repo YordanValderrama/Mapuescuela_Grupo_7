@@ -14,7 +14,7 @@
       <design:description><![CDATA[Proceso central de negocio de Mapuescuela: gestiona el pago, la validación del
     comprobante, el vencimiento del plazo de 24 horas, la actualización de inventario y la
     entrega (retiro o despacho) de un pedido ya generado por la aplicación web.]]></design:description>
-      <design:modificationdate><![CDATA[2026-08-27T02:37:48.645Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-28T01:56:48.319Z]]></design:modificationdate>
     </extensionElements>
     <laneSet id="laneSet_procesoDeVentaMauescuelaTOBE">
       <lane id="cliente" name="Cliente">
@@ -25,28 +25,9 @@
         <flowNodeRef>reenviar_comprobante</flowNodeRef>
         <flowNodeRef>startnoneevent1</flowNodeRef>
         <flowNodeRef>f3</flowNodeRef>
-        <flowNodeRef>f2</flowNodeRef>
         <flowNodeRef>SequenceFlow_49</flowNodeRef>
         <flowNodeRef>SequenceFlow_48</flowNodeRef>
         <flowNodeRef>f1</flowNodeRef>
-      </lane>
-      <lane id="Lane_47" name="Web service">
-        <flowNodeRef>st_cancelar_pedido_vencido</flowNodeRef>
-        <flowNodeRef>cancelarPedido</flowNodeRef>
-        <flowNodeRef>notificarPago</flowNodeRef>
-        <flowNodeRef>st_actualizar_inventario</flowNodeRef>
-        <flowNodeRef>st_notificar_rechazo</flowNodeRef>
-        <flowNodeRef>nPedido</flowNodeRef>
-        <flowNodeRef>nofificarEstado</flowNodeRef>
-        <flowNodeRef>end_cancelado_vencimiento</flowNodeRef>
-        <flowNodeRef>end_pago_rechazado</flowNodeRef>
-        <flowNodeRef>f15</flowNodeRef>
-        <flowNodeRef>SequenceFlow_51</flowNodeRef>
-        <flowNodeRef>SequenceFlow_38</flowNodeRef>
-        <flowNodeRef>f8</flowNodeRef>
-        <flowNodeRef>SequenceFlow_50</flowNodeRef>
-        <flowNodeRef>SequenceFlow_52</flowNodeRef>
-        <flowNodeRef>SequenceFlow_46</flowNodeRef>
       </lane>
       <lane id="Lane_3" name="Voluntario">
         <flowNodeRef>registraInformacionDespacho</flowNodeRef>
@@ -57,8 +38,7 @@
         <flowNodeRef>gw_pago_aprobado</flowNodeRef>
         <flowNodeRef>gw_modalidad_entrega</flowNodeRef>
         <flowNodeRef>end_finalizado_retiro</flowNodeRef>
-        <flowNodeRef>end_finalizado_despacho</flowNodeRef>
-        <flowNodeRef>f14</flowNodeRef>
+        <flowNodeRef>SequenceFlow_53</flowNodeRef>
         <flowNodeRef>f11</flowNodeRef>
         <flowNodeRef>f141</flowNodeRef>
         <flowNodeRef>SequenceFlow_36</flowNodeRef>
@@ -68,6 +48,27 @@
         <flowNodeRef>SequenceFlow_47</flowNodeRef>
         <flowNodeRef>f9</flowNodeRef>
         <flowNodeRef>f12</flowNodeRef>
+      </lane>
+      <lane id="Lane_47" name="Web service">
+        <flowNodeRef>st_cancelar_pedido_vencido</flowNodeRef>
+        <flowNodeRef>cancelarPedido</flowNodeRef>
+        <flowNodeRef>notificarPago</flowNodeRef>
+        <flowNodeRef>st_actualizar_inventario</flowNodeRef>
+        <flowNodeRef>st_notificar_rechazo</flowNodeRef>
+        <flowNodeRef>nPedido</flowNodeRef>
+        <flowNodeRef>nofificarEstado</flowNodeRef>
+        <flowNodeRef>notificarEnvioCliente</flowNodeRef>
+        <flowNodeRef>end_cancelado_vencimiento</flowNodeRef>
+        <flowNodeRef>end_pago_rechazado</flowNodeRef>
+        <flowNodeRef>end_finalizado_despacho</flowNodeRef>
+        <flowNodeRef>f15</flowNodeRef>
+        <flowNodeRef>SequenceFlow_51</flowNodeRef>
+        <flowNodeRef>SequenceFlow_38</flowNodeRef>
+        <flowNodeRef>f8</flowNodeRef>
+        <flowNodeRef>SequenceFlow_50</flowNodeRef>
+        <flowNodeRef>SequenceFlow_52</flowNodeRef>
+        <flowNodeRef>SequenceFlow_46</flowNodeRef>
+        <flowNodeRef>f14</flowNodeRef>
       </lane>
     </laneSet>
     <boundaryEvent id="boundary_timer_24h" name="Vencimiento 24h" attachedToRef="ut_cargar_comprobante" cancelActivity="true">
@@ -116,11 +117,6 @@
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="f2" sourceRef="ut_datos_personales_modalidad_entrega" targetRef="ut_cargar_comprobante">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_49" sourceRef="ut_datos_personales_modalidad_entrega" targetRef="nPedido">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
@@ -135,6 +131,117 @@
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
+    </sequenceFlow>
+    <userTask id="registraInformacionDespacho" name="Voluntario registra información de despacho" flowable:candidateGroups="voluntarios" flowable:formKey="form_registrar_despacho" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="ut_registrar_retiro" name="Voluntario registra retiro efectuado" flowable:candidateGroups="voluntarios" flowable:formKey="form_registrar_retiro" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="ut_revisar_comprobante" name="Voluntario revisa comprobante" flowable:candidateGroups="voluntarios" flowable:formKey="form_revisar_comprobante" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <manualTask id="ut_preparar_retiro" name="Voluntario prepara pedido para retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[ManualTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </manualTask>
+    <manualTask id="ut_preparar_despacho" name="Voluntario prepara pedido para despacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[ManualTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </manualTask>
+    <exclusiveGateway id="gw_pago_aprobado" name="¿Pago aprobado?">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <exclusiveGateway id="gw_modalidad_entrega" name="¿modalidad de entrega?">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <endEvent id="end_finalizado_retiro" name="Pedido finalizado (retirado)">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="SequenceFlow_53" sourceRef="registraInformacionDespacho" targetRef="notificarEnvioCliente">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f11" sourceRef="ut_registrar_retiro" targetRef="end_finalizado_retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f141" sourceRef="ut_revisar_comprobante" targetRef="gw_pago_aprobado">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_36" sourceRef="ut_preparar_retiro" targetRef="ut_registrar_retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f13" sourceRef="ut_preparar_despacho" targetRef="registraInformacionDespacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="f5" name="Rachazo" sourceRef="gw_pago_aprobado" targetRef="st_notificar_rechazo">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'pago_rechazado'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="f7" name="aprobado" sourceRef="gw_pago_aprobado" targetRef="notificarPago">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'pago_aprobado'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_47" name="error de comprobante" sourceRef="gw_pago_aprobado" targetRef="nofificarEstado">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'error_comprobante'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="f9" name="RETIRO" sourceRef="gw_modalidad_entrega" targetRef="ut_preparar_retiro">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${seleccioneModalidadDeEntrega == 'retiro_tienda'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="f12" name="DESPACHO" sourceRef="gw_modalidad_entrega" targetRef="ut_preparar_despacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${seleccioneModalidadDeEntrega == 'reparto_domicilio'}]]></conditionExpression>
     </sequenceFlow>
     <serviceTask id="st_cancelar_pedido_vencido" name="Cancelar pedido y liberar stock (web servide Java)" flowable:type="external-worker" flowable:topic="cancelar-pedido-vencido">
       <extensionElements>
@@ -178,6 +285,12 @@
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </serviceTask>
+    <serviceTask id="notificarEnvioCliente" name="Notificar envio a cliente" flowable:type="external-worker" flowable:topic="notificar_envio_cliente" flowable:exclusive="false">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
     <endEvent id="end_cancelado_vencimiento" name="Pedido Cancelado (vencimiento)">
       <extensionElements>
         <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
@@ -185,6 +298,12 @@
       </extensionElements>
     </endEvent>
     <endEvent id="end_pago_rechazado" name="pedido Anulado">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <endEvent id="end_finalizado_despacho" name="Pedido finalizado (despacho)">
       <extensionElements>
         <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
@@ -225,122 +344,10 @@
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <userTask id="registraInformacionDespacho" name="Voluntario registra información de despacho" flowable:candidateGroups="voluntarios" flowable:formKey="form_registrar_despacho" flowable:formFieldValidation="false">
-      <extensionElements>
-        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
-        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </userTask>
-    <userTask id="ut_registrar_retiro" name="Voluntario registra retiro efectuado" flowable:candidateGroups="voluntarios" flowable:formKey="form_registrar_retiro" flowable:formFieldValidation="false">
-      <extensionElements>
-        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
-        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </userTask>
-    <userTask id="ut_revisar_comprobante" name="Voluntario revisa comprobante" flowable:candidateGroups="voluntarios" flowable:formKey="form_revisar_comprobante" flowable:formFieldValidation="false">
-      <extensionElements>
-        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
-        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </userTask>
-    <manualTask id="ut_preparar_retiro" name="Voluntario prepara pedido para retiro">
-      <extensionElements>
-        <design:stencilid><![CDATA[ManualTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </manualTask>
-    <manualTask id="ut_preparar_despacho" name="Voluntario prepara pedido para despacho">
-      <extensionElements>
-        <design:stencilid><![CDATA[ManualTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </manualTask>
-    <exclusiveGateway id="gw_pago_aprobado" name="¿Pago aprobado?" default="f5">
-      <extensionElements>
-        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-    </exclusiveGateway>
-    <exclusiveGateway id="gw_modalidad_entrega" name="¿modalidad de entrega?">
-      <extensionElements>
-        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-    </exclusiveGateway>
-    <endEvent id="end_finalizado_retiro" name="Pedido finalizado (retirado)">
-      <extensionElements>
-        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-    </endEvent>
-    <endEvent id="end_finalizado_despacho" name="Pedido finalizado (despacho)">
-      <extensionElements>
-        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-    </endEvent>
-    <sequenceFlow id="f14" sourceRef="registraInformacionDespacho" targetRef="end_finalizado_despacho">
+    <sequenceFlow id="f14" sourceRef="notificarEnvioCliente" targetRef="end_finalizado_despacho">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="f11" sourceRef="ut_registrar_retiro" targetRef="end_finalizado_retiro">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="f141" sourceRef="ut_revisar_comprobante" targetRef="gw_pago_aprobado">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_36" sourceRef="ut_preparar_retiro" targetRef="ut_registrar_retiro">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="f13" sourceRef="ut_preparar_despacho" targetRef="registraInformacionDespacho">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="f5" name="Rachazo" sourceRef="gw_pago_aprobado" targetRef="st_notificar_rechazo">
-      <extensionElements>
-        <flowable:is-default-flow><![CDATA[true]]></flowable:is-default-flow>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="f7" name="aprobado" sourceRef="gw_pago_aprobado" targetRef="notificarPago">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'pago_aprobado'}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_47" name="error de comprobante" sourceRef="gw_pago_aprobado" targetRef="nofificarEstado">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${confirmarPago == 'error_comprobante'}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="f9" name="RETIRO" sourceRef="gw_modalidad_entrega" targetRef="ut_preparar_retiro">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${seleccioneModalidadDeEntrega == 'retiro_tienda'}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="f12" name="DESPACHO" sourceRef="gw_modalidad_entrega" targetRef="ut_preparar_despacho">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${seleccioneModalidadDeEntrega == 'reparto_domicilio'}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
@@ -368,42 +375,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startnoneevent1" id="BPMNShape_startnoneevent1">
         <omgdc:Bounds height="30.0" width="30.0" x="229.07563433599347" y="173.4573531114716"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="Lane_47" id="BPMNShape_Lane_47">
-        <omgdc:Bounds height="306.0" width="1954.0" x="192.0" y="403.20001220703125"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="st_cancelar_pedido_vencido" id="BPMNShape_st_cancelar_pedido_vencido">
-        <omgdc:Bounds height="88.0" width="175.0" x="1085.5184273409911" y="407.5291763158915"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="cancelarPedido" id="BPMNShape_cancelarPedido">
-        <omgdc:Bounds height="78.0" width="174.0" x="1274.3402277534651" y="495.2696356979254"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="notificarPago" id="BPMNShape_notificarPago">
-        <omgdc:Bounds height="70.0" width="148.0" x="1011.1790197218631" y="618.2215938386597"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="st_actualizar_inventario" id="BPMNShape_st_actualizar_inventario">
-        <omgdc:Bounds height="80.0" width="100.0" x="1243.995616831427" y="613.2215938386597"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="st_notificar_rechazo" id="BPMNShape_st_notificar_rechazo">
-        <omgdc:Bounds height="80.0" width="100.0" x="942.8659979490998" y="494.2696356979254"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="nPedido" id="BPMNShape_nPedido">
-        <omgdc:Bounds height="80.0" width="100.0" x="458.35149449134343" y="416.6072874754923"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="nofificarEstado" id="BPMNShape_nofificarEstado">
-        <omgdc:Bounds height="80.0" width="100.0" x="565.1756488302299" y="523.9129964994333"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="end_cancelado_vencimiento" id="BPMNShape_end_cancelado_vencimiento">
-        <omgdc:Bounds height="28.0" width="28.0" x="1420.3461095206678" y="437.5291763158915"></omgdc:Bounds>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.0" width="176.0" x="1357.4633149011438" y="470.40642124083826"></omgdc:Bounds>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="end_pago_rechazado" id="BPMNShape_end_pago_rechazado">
-        <omgdc:Bounds height="28.0" width="28.0" x="1621.283423846274" y="520.2696356979254"></omgdc:Bounds>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.0" width="85.0" x="1597.6175171284806" y="568.693582733705"></omgdc:Bounds>
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="Lane_3" id="BPMNShape_Lane_3">
         <omgdc:Bounds height="335.0" width="1954.0" x="192.0" y="709.2000122070312"></omgdc:Bounds>
@@ -441,10 +412,49 @@
           <omgdc:Bounds height="18.0" width="147.0" x="1805.36674952116" y="964.444133846753"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="end_finalizado_despacho" id="BPMNShape_end_finalizado_despacho">
-        <omgdc:Bounds height="28.0" width="28.0" x="2007.6308044565826" y="863.2899221290762"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="Lane_47" id="BPMNShape_Lane_47">
+        <omgdc:Bounds height="306.0" width="1954.0" x="192.0" y="403.20001220703125"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="st_cancelar_pedido_vencido" id="BPMNShape_st_cancelar_pedido_vencido">
+        <omgdc:Bounds height="88.0" width="175.0" x="1085.5184273409911" y="407.5291763158915"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="cancelarPedido" id="BPMNShape_cancelarPedido">
+        <omgdc:Bounds height="78.0" width="174.0" x="1274.3402277534651" y="495.2696356979254"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notificarPago" id="BPMNShape_notificarPago">
+        <omgdc:Bounds height="70.0" width="148.0" x="1011.1790197218631" y="618.2215938386597"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="st_actualizar_inventario" id="BPMNShape_st_actualizar_inventario">
+        <omgdc:Bounds height="80.0" width="100.0" x="1243.995616831427" y="613.2215938386597"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="st_notificar_rechazo" id="BPMNShape_st_notificar_rechazo">
+        <omgdc:Bounds height="80.0" width="100.0" x="942.8659979490998" y="494.2696356979254"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="nPedido" id="BPMNShape_nPedido">
+        <omgdc:Bounds height="80.0" width="100.0" x="458.35149449134343" y="416.6072874754923"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="nofificarEstado" id="BPMNShape_nofificarEstado">
+        <omgdc:Bounds height="80.0" width="100.0" x="565.1756488302299" y="523.9129964994333"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notificarEnvioCliente" id="BPMNShape_notificarEnvioCliente">
+        <omgdc:Bounds height="80.0" width="100.0" x="1890.515814586022" y="564.7196219741809"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_cancelado_vencimiento" id="BPMNShape_end_cancelado_vencimiento">
+        <omgdc:Bounds height="28.0" width="28.0" x="1420.3461095206678" y="437.5291763158915"></omgdc:Bounds>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.0" width="158.0" x="1945.5646185149099" y="911.559768772782"></omgdc:Bounds>
+          <omgdc:Bounds height="18.0" width="176.0" x="1357.4633149011438" y="470.40642124083826"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_pago_rechazado" id="BPMNShape_end_pago_rechazado">
+        <omgdc:Bounds height="28.0" width="28.0" x="1621.283423846274" y="520.2696356979254"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="85.0" x="1597.6175171284806" y="568.693582733705"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end_finalizado_despacho" id="BPMNShape_end_finalizado_despacho">
+        <omgdc:Bounds height="28.0" width="28.0" x="1926.515814586022" y="458.1419060850162"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="158.0" x="1867.394304325653" y="432.79486069613347"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="f_timer" id="BPMNEdge_f_timer" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="88.0" flowable:targetDockerY="44.0">
@@ -466,17 +476,17 @@
         <omgdi:waypoint x="1159.1790197218631" y="653.2215938386597"></omgdi:waypoint>
         <omgdi:waypoint x="1243.995616831427" y="653.2215938386597"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_46" id="BPMNEdge_SequenceFlow_46" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="62.0" flowable:targetDockerY="26.0">
-        <omgdi:waypoint x="621.1756488302299" y="523.9129964994333"></omgdi:waypoint>
-        <omgdi:waypoint x="621.1756488302299" y="366.0036963152712"></omgdi:waypoint>
-        <omgdi:waypoint x="659.732639124538" y="366.0036963152712"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="f12" id="BPMNEdge_f12" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="1483.0801263858164" y="753.9254274386598"></omgdi:waypoint>
         <omgdi:waypoint x="1654.2222918092" y="753.9254274386598"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="18.0" width="63.0" x="1534.2776461266258" y="766.6646177790185"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_46" id="BPMNEdge_SequenceFlow_46" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="62.0" flowable:targetDockerY="26.0">
+        <omgdi:waypoint x="621.1756488302299" y="523.9129964994333"></omgdi:waypoint>
+        <omgdi:waypoint x="621.1756488302299" y="366.0036963152712"></omgdi:waypoint>
+        <omgdi:waypoint x="659.732639124538" y="366.0036963152712"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="f11" id="BPMNEdge_f11" flowable:sourceDockerX="68.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
         <omgdi:waypoint x="1742.917780366597" y="937.0042743553558"></omgdi:waypoint>
@@ -498,9 +508,9 @@
           <omgdc:Bounds height="18.0" width="119.0" x="540.0124479912691" y="840.8264377480307"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="f14" id="BPMNEdge_f14" flowable:sourceDockerX="80.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
-        <omgdi:waypoint x="2019.6130071585355" y="793.9254274386598"></omgdi:waypoint>
-        <omgdi:waypoint x="2021.2920404431486" y="863.2940213383731"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="f14" id="BPMNEdge_f14" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="1940.515814586022" y="564.7196219741809"></omgdi:waypoint>
+        <omgdi:waypoint x="1940.515814586022" y="486.1419060850162"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="f13" id="BPMNEdge_f13" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="80.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="1754.2222918092" y="753.9254274386598"></omgdi:waypoint>
@@ -513,10 +523,6 @@
       <bpmndi:BPMNEdge bpmnElement="f15" id="BPMNEdge_f15" flowable:sourceDockerX="88.0" flowable:sourceDockerY="44.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
         <omgdi:waypoint x="1260.5184273409911" y="451.52917631611183"></omgdi:waypoint>
         <omgdi:waypoint x="1420.3461095206678" y="451.5291763158915"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="f2" id="BPMNEdge_f2" flowable:sourceDockerX="78.0" flowable:sourceDockerY="38.0" flowable:targetDockerX="85.0" flowable:targetDockerY="39.0">
-        <omgdi:waypoint x="497.1265314116611" y="188.4573531114716"></omgdi:waypoint>
-        <omgdi:waypoint x="770.9375127890322" y="188.4573531114716"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="f3" id="BPMNEdge_f3" flowable:sourceDockerX="85.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="80.0" flowable:targetDockerY="32.0">
         <omgdi:waypoint x="855.4375127890322" y="227.4573531114716"></omgdi:waypoint>
@@ -563,6 +569,12 @@
         <omgdi:waypoint x="533.0298673457643" y="276.9569096517822"></omgdi:waypoint>
         <omgdi:waypoint x="812.5436795004604" y="276.9569096517822"></omgdi:waypoint>
         <omgdi:waypoint x="813.1875127890322" y="227.4573531114716"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_53" id="BPMNEdge_SequenceFlow_53" flowable:sourceDockerX="80.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1979.6130071585355" y="713.9254274386598"></omgdi:waypoint>
+        <omgdi:waypoint x="1979.6130071585355" y="679.3225247064204"></omgdi:waypoint>
+        <omgdi:waypoint x="1940.515814586022" y="679.3225247064204"></omgdi:waypoint>
+        <omgdi:waypoint x="1940.515814586022" y="644.7196219741809"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_50" id="BPMNEdge_SequenceFlow_50" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="87.0" flowable:targetDockerY="39.0">
         <omgdi:waypoint x="1042.8659979491" y="534.2696356979254"></omgdi:waypoint>
