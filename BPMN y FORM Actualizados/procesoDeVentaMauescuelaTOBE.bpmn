@@ -3,7 +3,7 @@
   <collaboration id="Collaboration">
     <participant id="Pool_1" name="Mapuescuela" processRef="procesoDeVentaMauescuelaTOBE"></participant>
   </collaboration>
-  <process id="procesoDeVentaMauescuelaTOBE" name="Proceso de venta Mauescuela TO-BE" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
+  <process id="procesoDeVentaMauescuelaTOBE" name="Proceso de venta Mapuescuela TO-BE" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
     <documentation>Proceso central de negocio de Mapuescuela: gestiona el pago, la validación del
     comprobante, el vencimiento del plazo de 24 horas, la actualización de inventario y la
     entrega (retiro o despacho) de un pedido ya generado por la aplicación web.</documentation>
@@ -14,7 +14,7 @@
       <design:description><![CDATA[Proceso central de negocio de Mapuescuela: gestiona el pago, la validación del
     comprobante, el vencimiento del plazo de 24 horas, la actualización de inventario y la
     entrega (retiro o despacho) de un pedido ya generado por la aplicación web.]]></design:description>
-      <design:modificationdate><![CDATA[2026-08-28T01:56:48.319Z]]></design:modificationdate>
+      <design:modificationdate><![CDATA[2026-08-28T19:30:37.114Z]]></design:modificationdate>
     </extensionElements>
     <laneSet id="laneSet_procesoDeVentaMauescuelaTOBE">
       <lane id="cliente" name="Cliente">
@@ -26,6 +26,7 @@
         <flowNodeRef>startnoneevent1</flowNodeRef>
         <flowNodeRef>f3</flowNodeRef>
         <flowNodeRef>SequenceFlow_49</flowNodeRef>
+        <flowNodeRef>SequenceFlow_54</flowNodeRef>
         <flowNodeRef>SequenceFlow_48</flowNodeRef>
         <flowNodeRef>f1</flowNodeRef>
       </lane>
@@ -58,6 +59,7 @@
         <flowNodeRef>nPedido</flowNodeRef>
         <flowNodeRef>nofificarEstado</flowNodeRef>
         <flowNodeRef>notificarEnvioCliente</flowNodeRef>
+        <flowNodeRef>ExternalWorkerTask_49</flowNodeRef>
         <flowNodeRef>end_cancelado_vencimiento</flowNodeRef>
         <flowNodeRef>end_pago_rechazado</flowNodeRef>
         <flowNodeRef>end_finalizado_despacho</flowNodeRef>
@@ -69,6 +71,7 @@
         <flowNodeRef>SequenceFlow_52</flowNodeRef>
         <flowNodeRef>SequenceFlow_46</flowNodeRef>
         <flowNodeRef>f14</flowNodeRef>
+        <flowNodeRef>SequenceFlow_55</flowNodeRef>
       </lane>
     </laneSet>
     <boundaryEvent id="boundary_timer_24h" name="Vencimiento 24h" attachedToRef="ut_cargar_comprobante" cancelActivity="true">
@@ -85,7 +88,7 @@
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <userTask id="ut_cargar_comprobante" name="Cliente carga comprobante de transferencia" flowable:assignee="${initiator}" flowable:candidateUsers="&lt;userTask id=&quot;uploadReceiptTask&quot; name=&quot;Cliente carga comprobante&quot; flowable:candidateUsers=&quot;${initiator}&quot;/&gt;" flowable:formKey="form_cargar_comprobante" flowable:formFieldValidation="false">
+    <userTask id="ut_cargar_comprobante" name="Cliente carga comprobante de transferencia" flowable:assignee="${initiator}" flowable:formKey="form_cargar_comprobante" flowable:formFieldValidation="false">
       <extensionElements>
         <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
         <design:stencilid><![CDATA[FormTask]]></design:stencilid>
@@ -112,12 +115,17 @@
         <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
       </extensionElements>
     </startEvent>
-    <sequenceFlow id="f3" sourceRef="ut_cargar_comprobante" targetRef="ut_revisar_comprobante">
+    <sequenceFlow id="f3" sourceRef="ut_cargar_comprobante" targetRef="ExternalWorkerTask_49">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_49" sourceRef="ut_datos_personales_modalidad_entrega" targetRef="nPedido">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_54" sourceRef="ut_datos_personales_modalidad_entrega" targetRef="ut_cargar_comprobante">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -285,7 +293,13 @@
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </serviceTask>
-    <serviceTask id="notificarEnvioCliente" name="Notificar envio a cliente" flowable:type="external-worker" flowable:topic="notificar_envio_cliente" flowable:exclusive="false">
+    <serviceTask id="notificarEnvioCliente" name="Notificar envio a cliente" flowable:type="external-worker" flowable:topic="notificar-envio-cliente" flowable:exclusive="false">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="ExternalWorkerTask_49" name="Registrar pago" flowable:type="external-worker" flowable:topic="registrar-pago" flowable:exclusive="false">
       <extensionElements>
         <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
@@ -345,6 +359,11 @@
       </extensionElements>
     </sequenceFlow>
     <sequenceFlow id="f14" sourceRef="notificarEnvioCliente" targetRef="end_finalizado_despacho">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_55" sourceRef="ExternalWorkerTask_49" targetRef="ut_revisar_comprobante">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -439,6 +458,9 @@
       <bpmndi:BPMNShape bpmnElement="notificarEnvioCliente" id="BPMNShape_notificarEnvioCliente">
         <omgdc:Bounds height="80.0" width="100.0" x="1890.515814586022" y="564.7196219741809"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ExternalWorkerTask_49" id="BPMNShape_ExternalWorkerTask_49">
+        <omgdc:Bounds height="80.0" width="100.0" x="805.190530437607" y="432.1419060850162"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="end_cancelado_vencimiento" id="BPMNShape_end_cancelado_vencimiento">
         <omgdc:Bounds height="28.0" width="28.0" x="1420.3461095206678" y="437.5291763158915"></omgdc:Bounds>
         <bpmndi:BPMNLabel>
@@ -472,10 +494,6 @@
         <omgdi:waypoint x="419.6265314116611" y="456.6072874754923"></omgdi:waypoint>
         <omgdi:waypoint x="458.35149449134343" y="456.6072874754923"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_38" id="BPMNEdge_SequenceFlow_38" flowable:sourceDockerX="74.0" flowable:sourceDockerY="35.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
-        <omgdi:waypoint x="1159.1790197218631" y="653.2215938386597"></omgdi:waypoint>
-        <omgdi:waypoint x="1243.995616831427" y="653.2215938386597"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="f12" id="BPMNEdge_f12" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="1483.0801263858164" y="753.9254274386598"></omgdi:waypoint>
         <omgdi:waypoint x="1654.2222918092" y="753.9254274386598"></omgdi:waypoint>
@@ -491,14 +509,6 @@
       <bpmndi:BPMNEdge bpmnElement="f11" id="BPMNEdge_f11" flowable:sourceDockerX="68.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
         <omgdi:waypoint x="1742.917780366597" y="937.0042743553558"></omgdi:waypoint>
         <omgdi:waypoint x="1839.1782651661376" y="937.0042743553558"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="f141" id="BPMNEdge_f141" flowable:sourceDockerX="80.0" flowable:sourceDockerY="32.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
-        <omgdi:waypoint x="856.231430325353" y="827.833924447437"></omgdi:waypoint>
-        <omgdi:waypoint x="856.231430325353" y="940.7538139501992"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_36" id="BPMNEdge_SequenceFlow_36" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="68.0" flowable:targetDockerY="40.0">
-        <omgdi:waypoint x="1513.0801263858164" y="937.0042743553558"></omgdi:waypoint>
-        <omgdi:waypoint x="1606.917780366597" y="937.0042743553558"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_47" id="BPMNEdge_SequenceFlow_47" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="836.231430325353" y="960.7538139501992"></omgdi:waypoint>
@@ -524,11 +534,11 @@
         <omgdi:waypoint x="1260.5184273409911" y="451.52917631611183"></omgdi:waypoint>
         <omgdi:waypoint x="1420.3461095206678" y="451.5291763158915"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="f3" id="BPMNEdge_f3" flowable:sourceDockerX="85.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="80.0" flowable:targetDockerY="32.0">
+      <bpmndi:BPMNEdge bpmnElement="f3" id="BPMNEdge_f3" flowable:sourceDockerX="85.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="855.4375127890322" y="227.4573531114716"></omgdi:waypoint>
-        <omgdi:waypoint x="855.4375127890322" y="496.14563877945426"></omgdi:waypoint>
-        <omgdi:waypoint x="856.231430325353" y="496.14563877945426"></omgdi:waypoint>
-        <omgdi:waypoint x="856.231430325353" y="764.833924447437"></omgdi:waypoint>
+        <omgdi:waypoint x="855.4375127890322" y="329.7996295982439"></omgdi:waypoint>
+        <omgdi:waypoint x="855.190530437607" y="329.7996295982439"></omgdi:waypoint>
+        <omgdi:waypoint x="855.190530437607" y="432.1419060850162"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="f5" id="BPMNEdge_f5" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
         <omgdi:waypoint x="876.231430325353" y="960.7538139501992"></omgdi:waypoint>
@@ -560,6 +570,24 @@
           <omgdc:Bounds height="18.0" width="41.0" x="1423.5357363046492" y="823.32887016153"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_38" id="BPMNEdge_SequenceFlow_38" flowable:sourceDockerX="74.0" flowable:sourceDockerY="35.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1159.1790197218631" y="653.2215938386597"></omgdi:waypoint>
+        <omgdi:waypoint x="1243.995616831427" y="653.2215938386597"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_55" id="BPMNEdge_SequenceFlow_55" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="80.0" flowable:targetDockerY="32.0">
+        <omgdi:waypoint x="855.190530437607" y="512.1419060850162"></omgdi:waypoint>
+        <omgdi:waypoint x="855.190530437607" y="638.4879152662265"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="638.4879152662265"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="764.833924447437"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="f141" id="BPMNEdge_f141" flowable:sourceDockerX="80.0" flowable:sourceDockerY="32.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="856.231430325353" y="827.833924447437"></omgdi:waypoint>
+        <omgdi:waypoint x="856.231430325353" y="940.7538139501992"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_36" id="BPMNEdge_SequenceFlow_36" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="68.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1513.0801263858164" y="937.0042743553558"></omgdi:waypoint>
+        <omgdi:waypoint x="1606.917780366597" y="937.0042743553558"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_51" id="BPMNEdge_SequenceFlow_51" flowable:sourceDockerX="87.0" flowable:sourceDockerY="39.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
         <omgdi:waypoint x="1448.3402277534651" y="534.2694862950303"></omgdi:waypoint>
         <omgdi:waypoint x="1621.283423846274" y="534.2696356979254"></omgdi:waypoint>
@@ -575,6 +603,10 @@
         <omgdi:waypoint x="1979.6130071585355" y="679.3225247064204"></omgdi:waypoint>
         <omgdi:waypoint x="1940.515814586022" y="679.3225247064204"></omgdi:waypoint>
         <omgdi:waypoint x="1940.515814586022" y="644.7196219741809"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_54" id="BPMNEdge_SequenceFlow_54" flowable:sourceDockerX="78.0" flowable:sourceDockerY="38.0" flowable:targetDockerX="85.0" flowable:targetDockerY="39.0">
+        <omgdi:waypoint x="497.1265314116611" y="188.4573531114716"></omgdi:waypoint>
+        <omgdi:waypoint x="770.9375127890322" y="188.4573531114716"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_50" id="BPMNEdge_SequenceFlow_50" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="87.0" flowable:targetDockerY="39.0">
         <omgdi:waypoint x="1042.8659979491" y="534.2696356979254"></omgdi:waypoint>
