@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapuescuela - Datos del Pedido</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    :root {
+      --primary-blue: #0284c7;
+      --primary-hover: #0369a1;
+      --soft-blue: #f0f9ff;
+      --border-blue: #bae6fd;
+    }
+    
+    body { 
+      background-color: #f8fafc; 
+      font-family: 'Poppins', sans-serif; 
+      color: #334155;
+    }
+    
+    .navbar {
+      border-bottom: 1px solid #e2e8f0;
+      background-color: #ffffff;
+    }
+
+    .brand-logo {
+      height: 40px;
+      max-width: 220px;
+      object-fit: contain;
+    }
+
+    /* Stepper de 2 Pasos */
+    .stepper-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem auto 2rem;
+      max-width: 420px;
+      position: relative;
+    }
+
+    .stepper-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .stepper-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      border: 2px solid #cbd5e1;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+      transition: all 0.3s ease;
+    }
+
+    .stepper-title {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .stepper-item.active .stepper-circle {
+      border-color: var(--primary-blue);
+      background-color: var(--primary-blue);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+    }
+
+    .stepper-item.active .stepper-title {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    .stepper-item.completed .stepper-circle {
+      border-color: #22c55e;
+      background-color: #22c55e;
+      color: #ffffff;
+    }
+
+    .stepper-item.completed .stepper-title {
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    .stepper-line {
+      position: absolute;
+      top: 18px;
+      left: 25%;
+      width: 50%;
+      height: 2px;
+      background-color: #e2e8f0;
+      z-index: 1;
+    }
+
+    .card-main {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      background-color: #ffffff;
+    }
+
+    .card-top { 
+      background-color: var(--primary-blue); 
+      color: white; 
+      font-weight: 600; 
+      border-radius: 12px 12px 0 0 !important;
+      padding: 1rem 1.5rem;
+    }
+
+    .section-title {
+      color: var(--primary-blue);
+      font-weight: 600;
+      font-size: 1.05rem;
+      border-bottom: 2px solid var(--border-blue);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .delivery-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: #ffffff;
+    }
+
+    .delivery-card:hover {
+      background-color: var(--soft-blue);
+      border-color: var(--border-blue);
+    }
+
+    .btn-blue { 
+      background-color: var(--primary-blue); 
+      color: white; 
+      font-weight: 600; 
+      border-radius: 8px;
+      padding: 0.65rem 1.75rem;
+    }
+
+    .btn-blue:hover { 
+      background-color: var(--primary-hover); 
+      color: white; 
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar shadow-sm">
+    <div class="container justify-content-center">
+      <a class="navbar-brand d-flex align-items-center m-0" href="#">
+        <img src="logo.png" alt="Mapuescuela" class="brand-logo" onerror="this.style.display='none'; document.getElementById('alt-brand-text').style.display='block';">
+        <span id="alt-brand-text" style="display:none; color: var(--primary-blue); font-weight: 700; font-size: 1.3rem;">Mapuescuela</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Stepper de 2 Pasos (Paso 1 Activo) -->
+  <div class="stepper-container">
+    <div class="stepper-line"></div>
+    <div class="stepper-item active">
+      <div class="stepper-circle">1</div>
+      <div class="stepper-title">Datos del Pedido</div>
+    </div>
+    <div class="stepper-item">
+      <div class="stepper-circle">2</div>
+      <div class="stepper-title">Pago y Comprobante</div>
+    </div>
+  </div>
+
+  <div class="container mb-5" style="max-width: 850px;">
+    <div class="card card-main">
+      <div class="card-header card-top d-flex align-items-center">
+        <i class="bi bi-person-lines-fill me-2 fs-5"></i>
+        <span>Formulario de Compra - Datos del Cliente</span>
+      </div>
+      <div class="card-body p-4 p-md-5">
+        
+        <form id="formPedido" action="pantalla2.html" method="GET">
+          
+          <div class="section-title">
+            <i class="bi bi-person me-2"></i>1. Datos Personales
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="nombreCompleto" class="form-label">Nombre Completo *</label>
+              <input type="text" class="form-control" id="nombreCompleto" name="nombreCompleto" placeholder="Ej: Marcela Pérez" required>
+            </div>
+            <div class="col-md-6">
+              <label for="rUT" class="form-label">RUT *</label>
+              <input type="text" class="form-control" id="rUT" name="rUT" placeholder="12.345.678-9" required>
+            </div>
+            <div class="col-md-6">
+              <label for="telefono" class="form-label">Teléfono *</label>
+              <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="+56 9 1234 5678" required>
+            </div>
+            <div class="col-md-6">
+              <label for="correoElectronico" class="form-label">Correo Electrónico *</label>
+              <input type="email" class="form-control" id="correoElectronico" name="correoElectronico" placeholder="cliente@correo.com" required>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <i class="bi bi-truck me-2"></i>2. Modalidad de Entrega
+          </div>
+          <div class="mb-4">
+            <label class="delivery-card d-flex align-items-center" for="modalidadTienda">
+              <input class="form-check-input me-3" type="radio" name="seleccioneModalidadDeEntrega" id="modalidadTienda" value="retiro_tienda" checked onchange="toggleDireccion()">
+              <div>
+                <strong class="d-block"><i class="bi bi-shop me-1 text-primary"></i> Retiro en tienda (Padre Hurtado)</strong>
+                <span class="text-muted small">Sin costo adicional en el punto de retiro oficial.</span>
+              </div>
+            </label>
+            
+            <label class="delivery-card d-flex align-items-center" for="modalidadDomicilio">
+              <input class="form-check-input me-3" type="radio" name="seleccioneModalidadDeEntrega" id="modalidadDomicilio" value="reparto_domicilio" onchange="toggleDireccion()">
+              <div>
+                <strong class="d-block"><i class="bi bi-box-seam me-1 text-primary"></i> Reparto a domicilio</strong>
+                <span class="text-muted small">Despacho directo a la dirección especificada.</span>
+              </div>
+            </label>
+          </div>
+
+          <div id="seccionDireccion">
+            <div class="section-title d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-geo-alt me-2"></i>3. Dirección de Entrega</span>
+              <span id="badgeOpcional" class="badge bg-light text-muted fw-normal">Opcional para retiro en tienda</span>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-12">
+                <label for="direccion" class="form-label">Calle y Número</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Av. Principal #123, Depto 402">
+              </div>
+              <div class="col-md-6">
+                <label for="region" class="form-label">Región</label>
+                <input type="text" class="form-control" id="region" name="region" value="Región Metropolitana">
+              </div>
+              <div class="col-md-6">
+                <label for="comuna" class="form-label">Comuna</label>
+                <input type="text" class="form-control" id="comuna" name="comuna" placeholder="Padre Hurtado">
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-blue">
+              Generar Pedido y Continuar <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDireccion() {
+      const esDomicilio = document.getElementById('modalidadDomicilio').checked;
+      const inputDireccion = document.getElementById('direccion');
+      const badge = document.getElementById('badgeOpcional');
+
+      if (esDomicilio) {
+        inputDireccion.required = true;
+        badge.innerText = 'Obligatorio para reparto';
+        badge.className = 'badge bg-danger-subtle text-danger fw-normal';
+      } else {
+        inputDireccion.required = false;
+        badge.innerText = 'Opcional para retiro en tienda';
+        badge.className = 'badge bg-light text-muted fw-normal';
+      }
+    }
+  </script>
+</body>
+</html>
