@@ -141,6 +141,12 @@
       border-radius: 10px;
     }
 
+    .summary-card {
+      background-color: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+    }
+
     .order-number-box {
       background-color: #ffffff;
       border: 2px dashed var(--primary-blue);
@@ -175,7 +181,7 @@
     </div>
   </nav>
 
-  <!-- Stepper de 2 Pasos (Paso 1 Listo, Paso 2 Activo) -->
+  <!-- Stepper de 2 Pasos -->
   <div class="stepper-container">
     <div class="stepper-line"></div>
     <div class="stepper-item completed">
@@ -201,13 +207,34 @@
           <i class="bi bi-check-circle-fill fs-2 me-3 text-success"></i>
           <div>
             <h5 class="alert-heading fw-bold mb-1">¡Su pedido ha sido Registrado!</h5>
-            <p class="mb-0 small text-muted">* Recuerde presentar su número de pedido al momento de retirar su compra en la tienda. Gracias por su compra.</p>
+            <p class="mb-0 small text-muted">* Recuerde presentar su número de pedido al momento de retirar su compra o recibir su despacho.</p>
           </div>
         </div>
 
-        <!-- 1. Identificador del Pedido -->
+        <!-- 1. Resumen de la Compra -->
         <div class="section-title">
-          <i class="bi bi-receipt me-2"></i>1. Identificador del Pedido
+          <i class="bi bi-bag-check me-2"></i>1. Resumen de la Compra
+        </div>
+        <div class="p-3 mb-4 summary-card">
+          <div class="row g-2 align-items-center">
+            <div class="col-sm-6">
+              <span class="text-muted small d-block">Producto seleccionado:</span>
+              <strong class="fs-6 text-primary" id="resumenProducto">Cuaderno Mapuche Artesanal</strong>
+            </div>
+            <div class="col-sm-3">
+              <span class="text-muted small d-block">Cantidad:</span>
+              <strong class="fs-6" id="resumenCantidad">1 unidad(es)</strong>
+            </div>
+            <div class="col-sm-3 text-sm-end">
+              <span class="text-muted small d-block">Total a transferir:</span>
+              <strong class="fs-5 text-success" id="resumenTotal">$4.500</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Identificador del Pedido -->
+        <div class="section-title">
+          <i class="bi bi-receipt me-2"></i>2. Identificador del Pedido
         </div>
         <div class="mb-4">
           <label class="form-label text-muted small d-block">N° de Pedido Asignado por el Sistema:</label>
@@ -216,9 +243,9 @@
           </div>
         </div>
 
-        <!-- 2. Datos para Transferencia -->
+        <!-- 3. Datos para Transferencia -->
         <div class="section-title">
-          <i class="bi bi-bank me-2"></i>2. Datos para la Transferencia Bancaria
+          <i class="bi bi-bank me-2"></i>3. Datos para la Transferencia Bancaria
         </div>
         <div class="p-4 mb-4 bank-card">
           <div class="row g-3">
@@ -253,10 +280,10 @@
           </div>
         </div>
 
-        <!-- 3. Subir Comprobante -->
-        <form id="formComprobante">
+        <!-- 4. Subir Comprobante -->
+        <form id="formComprobante" action="pantalla3.html" method="GET">
           <div class="section-title">
-            <i class="bi bi-cloud-arrow-up me-2"></i>3. Adjuntar Comprobante
+            <i class="bi bi-cloud-arrow-up me-2"></i>4. Adjuntar Comprobante
           </div>
           
           <div class="mb-4">
@@ -275,19 +302,32 @@
           </div>
         </form>
 
-        <div id="msgEnviado" class="alert alert-info mt-4 d-none">
-          <i class="bi bi-clock-history me-2"></i>Comprobante enviado exitosamente. Su pedido quedó a la espera de validación por parte del equipo de Mapuescuela.
-        </div>
-
       </div>
     </div>
   </div>
 
   <script>
-    document.getElementById('formComprobante').addEventListener('submit', function(e) {
-      e.preventDefault();
-      document.getElementById('msgEnviado').classList.remove('d-none');
-    });
+    // Precios referenciales por producto
+    const precios = {
+      'Cuaderno Mapuche Artesanal': 4500,
+      'Juego Didáctico Mapudungun': 8990,
+      'Set de Lápices Ilustrados': 3200,
+      'Mochila Étnica Infantil': 12500
+    };
+
+    // Leer parámetros de la URL enviados desde pantalla1
+    const params = new URLSearchParams(window.location.search);
+    const prodSeleccionado = params.get('producto');
+    const cantSeleccionada = parseInt(params.get('cantidad')) || 1;
+
+    if (prodSeleccionado) {
+      document.getElementById('resumenProducto').innerText = prodSeleccionado;
+      document.getElementById('resumenCantidad').innerText = `${cantSeleccionada} unidad(es)`;
+      
+      const unitario = precios[prodSeleccionado] || 5000;
+      const total = unitario * cantSeleccionada;
+      document.getElementById('resumenTotal').innerText = `$${total.toLocaleString('es-CL')}`;
+    }
   </script>
 </body>
 </html>

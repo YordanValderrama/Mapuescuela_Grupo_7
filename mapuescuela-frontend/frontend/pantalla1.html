@@ -199,8 +199,30 @@
         
         <form id="formPedido" action="pantalla2.html" method="GET">
           
+          <!-- SECCIÓN 1: SELECCIÓN DE PRODUCTO (Requerimiento Eva 3) -->
           <div class="section-title">
-            <i class="bi bi-person me-2"></i>1. Datos Personales
+            <i class="bi bi-bag-check me-2"></i>1. Selección de Producto
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <label for="producto" class="form-label">Producto Mapuescuela *</label>
+              <select id="producto" name="producto" class="form-select" required>
+                <option value="" disabled selected>-- Seleccione un producto del catálogo --</option>
+                <option value="Cuaderno Mapuche Artesanal">Cuaderno Mapuche Artesanal - $4.500</option>
+                <option value="Juego Didáctico Mapudungun">Juego Didáctico Mapudungun - $8.990</option>
+                <option value="Set de Lápices Ilustrados">Set de Lápices Ilustrados Mapuescuela - $3.200</option>
+                <option value="Mochila Étnica Infantil">Mochila Étnica Infantil - $12.500</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="cantidad" class="form-label">Cantidad *</label>
+              <input type="number" class="form-control" id="cantidad" name="cantidad" value="1" min="1" max="10" required>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 2: DATOS PERSONALES -->
+          <div class="section-title">
+            <i class="bi bi-person me-2"></i>2. Datos Personales
           </div>
           <div class="row g-3 mb-4">
             <div class="col-md-6">
@@ -221,8 +243,9 @@
             </div>
           </div>
 
+          <!-- SECCIÓN 3: MODALIDAD DE ENTREGA -->
           <div class="section-title">
-            <i class="bi bi-truck me-2"></i>2. Modalidad de Entrega
+            <i class="bi bi-truck me-2"></i>3. Modalidad de Entrega
           </div>
           <div class="mb-4">
             <label class="delivery-card d-flex align-items-center" for="modalidadTienda">
@@ -242,9 +265,10 @@
             </label>
           </div>
 
+          <!-- SECCIÓN 4: DIRECCIÓN DE ENTREGA -->
           <div id="seccionDireccion">
             <div class="section-title d-flex justify-content-between align-items-center">
-              <span><i class="bi bi-geo-alt me-2"></i>3. Dirección de Entrega</span>
+              <span><i class="bi bi-geo-alt me-2"></i>4. Dirección de Entrega</span>
               <span id="badgeOpcional" class="badge bg-light text-muted fw-normal">Opcional para retiro en tienda</span>
             </div>
             <div class="row g-3 mb-4">
