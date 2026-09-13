@@ -1,8 +1,10 @@
 package cl.mapuescuela;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -15,6 +17,54 @@ import java.util.Map;
 @Produces(MediaType.APPLICATION_JSON)
 public class PedidoResource {
 
+    private final PedidoRepository repositorio =
+            new PedidoRepository();
+
+    @POST
+    public Response crearPedido(Pedido pedido) {
+
+        if (pedidoInvalido(pedido)) {
+            return respuestaError();
+        }
+
+        if (pedido.getEstadoPago() == null
+                || pedido.getEstadoPago().trim().isEmpty()) {
+            pedido.setEstadoPago("PENDIENTE");
+        }
+
+        repositorio.guardar(pedido);
+
+        Map<String, Object> respuesta = crearRespuestaBase(
+                pedido,
+                "Pedido creado correctamente."
+        );
+
+        return Response.status(Response.Status.CREATED)
+                .entity(respuesta)
+                .build();
+    }
+
+    @GET
+    @Path("/{idPedido}")
+    public Response buscarPedido(
+            @PathParam("idPedido") String idPedido
+    ) {
+        Pedido pedido = repositorio.buscarPorId(idPedido);
+
+        if (pedido == null) {
+            Map<String, Object> error = new LinkedHashMap<>();
+
+            error.put("resultado", "ERROR");
+            error.put("mensaje", "Pedido no encontrado.");
+
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(error)
+                    .build();
+        }
+
+        return Response.ok(pedido).build();
+    }
+
     @POST
     @Path("aprobar-pago")
     public Response aprobarPago(Pedido pedido) {
@@ -24,6 +74,7 @@ public class PedidoResource {
         }
 
         pedido.setEstadoPago("APROBADO");
+        repositorio.guardar(pedido);
 
         Map<String, Object> respuesta = crearRespuestaBase(
                 pedido,
@@ -44,6 +95,7 @@ public class PedidoResource {
         }
 
         pedido.setEstadoPago("RECHAZADO");
+        repositorio.guardar(pedido);
 
         Map<String, Object> respuesta = crearRespuestaBase(
                 pedido,
@@ -62,6 +114,7 @@ public class PedidoResource {
         }
 
         pedido.setEstadoPago("CANCELADO_POR_TIEMPO");
+        repositorio.guardar(pedido);
 
         Map<String, Object> respuesta = crearRespuestaBase(
                 pedido,
@@ -82,6 +135,7 @@ public class PedidoResource {
 
     private Response respuestaError() {
         Map<String, Object> error = new LinkedHashMap<>();
+
         error.put("resultado", "ERROR");
         error.put("mensaje", "El idPedido es obligatorio.");
 
