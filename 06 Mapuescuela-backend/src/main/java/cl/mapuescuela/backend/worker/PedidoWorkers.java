@@ -11,18 +11,14 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * Workers relacionados al ciclo de vida del pedido.
+ * Worker relacionados al ciclo de vida del pedido.
  *
- * NOTA: esta clase había sido migrada por error a un patrón basado en
- * RuntimeService.startProcessInstanceByKey(...), lo cual rompía la
- * integración: las Service Tasks del BPMN son External Worker Tasks
- * (flowable:type="external-worker"), es decir, jobs que un cliente
- * externo debe reclamar por topic — no puntos donde tenga sentido
- * arrancar un proceso nuevo. Se restaura el patrón @FlowableWorker.
- *
- * También el archivo declaraba "class PedidoWorker" (sin "s"), lo cual
- * no compila: el nombre de la clase pública debe coincidir exactamente
- * con el nombre del archivo (PedidoWorkers.java -> class PedidoWorkers).
+ * ACTUALIZACIÓN (Entrega 3): ahora que existe InventarioResource
+ * (POST /inventario/liberar), cancelarPedidoVencido y
+ * anularPedidoRechazado además de marcar el pedido en PedidoResource
+ * liberan el stock reservado en el inventario real — antes solo se
+ * cambiaba el estado del pedido, sin tocar el stock, que era el mismo
+ * hueco que dejó pendiente InventarioWorker.
  */
 @Component
 public class PedidoWorkers extends BaseWorker {
@@ -36,7 +32,7 @@ public class PedidoWorkers extends BaseWorker {
 
         String numeroPedido = "PED-" + Instant.now().toEpochMilli();
 
-        log.info("Pedido generado: {} (cliente: {})", numeroPedido, vars.get("Nombrecompleto"));
+        log.info("Pedido generado: {} (cliente: {})", numeroPedido, vars.get("nombreCompleto"));
 
         return resultBuilder.success().variable("nPedido", numeroPedido);
     }
@@ -61,6 +57,8 @@ public class PedidoWorkers extends BaseWorker {
 
         Map<String, Object> respuesta = post("/pedidos/liberar-stock", pedido);
         log.info("Stock liberado para pedido {}: {}", pedido.getIdPedido(), respuesta);
+
+        liberarInventario(pedido);
     }
 
     // =====================================================================
@@ -72,5 +70,26 @@ public class PedidoWorkers extends BaseWorker {
 
         Map<String, Object> respuesta = post("/pedidos/rechazar-pago", pedido);
         log.info("Pago rechazado para pedido {}: {}", pedido.getIdPedido(), respuesta);
+
+        liberarInventario(pedido);
+    }
+
+    // ---------- Utilidad ----------
+
+    /**
+     * Devuelve al inventario el stock reservado para un pedido que no
+     * llegó a concretarse (vencido o rechazado). El nombre del producto
+     * real aún no viene de un carrito de compras (limitación de MVP
+     * documentada en BaseWorker#construirPedido), así que se usa el
+     * mismo valor de prueba con el que se descontó.
+     */
+    private void liberarInventario(Pedido pedido) {
+        Map<String, Object> body = Map.of(
+                "producto", pedido.getProducto() != null ? pedido.getProducto() : "PRODUCTO_PRUEBA",
+                "cantidad", pedido.getCantidad() > 0 ? pedido.getCantidad() : 1
+        );
+
+        Map<String, Object> respuestaInventario = post("/inventario/liberar", body);
+        log.info("Inventario liberado para pedido {}: {}", pedido.getIdPedido(), respuestaInventario);
     }
 }

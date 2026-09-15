@@ -46,17 +46,27 @@ public abstract class BaseWorker {
 
     /**
      * Arma el DTO real Pedido a partir de las variables del proceso.
-     * producto/cantidad quedan con un valor de prueba fijo hasta definir
-     * cómo se modela el carrito real.
+     *
+     * ACTUALIZADO (Entrega 3): ahora que pantalla1.html manda un producto
+     * real al crear el pedido (POST /pedidos), producto/cantidad se leen
+     * de las variables del proceso si vienen definidas. Si el proceso se
+     * inicia por otra vía que todavía no las envía (por ejemplo, un
+     * formulario de Flowable sin ese campo), se mantiene el valor de
+     * prueba de siempre como respaldo.
      */
     protected Pedido construirPedido(Map<String, Object> vars) {
         Pedido pedido = new Pedido();
         pedido.setIdPedido(str(vars.get("nPedido")));
-        pedido.setNombreCliente(str(vars.get("Nombrecompleto")));
+        pedido.setNombreCliente(str(vars.get("nombreCompleto")));
         pedido.setCorreoCliente(str(vars.get("correoElectronico")));
         pedido.setModalidadEntrega(mapModoReparto(vars.get("seleccioneModalidadDeEntrega")));
-        pedido.setProducto("PRODUCTO_PRUEBA");
-        pedido.setCantidad(1);
+
+        String producto = str(vars.get("producto"));
+        pedido.setProducto(producto != null && !producto.trim().isEmpty() ? producto : "PRODUCTO_PRUEBA");
+
+        Object cantidadVar = vars.get("cantidad");
+        pedido.setCantidad(cantidadVar instanceof Number ? ((Number) cantidadVar).intValue() : 1);
+
         return pedido;
     }
 

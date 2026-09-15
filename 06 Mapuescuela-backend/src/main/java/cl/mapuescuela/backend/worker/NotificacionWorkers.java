@@ -25,7 +25,7 @@ public class NotificacionWorkers extends BaseWorker {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
-    @FlowableWorker(topic = "notificar-rechazo")
+    @FlowableWorker(topic = "pago_rechazado")
     public void notificarRechazo(AcquiredExternalWorkerJob job) {
         Map<String, Object> vars = job.getVariables();
         String numeroPedido = str(vars.get("nPedido"));
@@ -38,7 +38,7 @@ public class NotificacionWorkers extends BaseWorker {
                 "Tu pago no pudo ser procesado - Pedido " + numeroPedido, mensaje);
     }
 
-    @FlowableWorker(topic = "notificar-pago-aprobado")
+    @FlowableWorker(topic = "pago_aprobado")
     public void notificarPagoAprobado(AcquiredExternalWorkerJob job) {
         Map<String, Object> vars = job.getVariables();
         String numeroPedido = str(vars.get("nPedido"));
@@ -49,7 +49,7 @@ public class NotificacionWorkers extends BaseWorker {
                 "Tu pago fue aprobado - Pedido " + numeroPedido, mensaje);
     }
 
-    @FlowableWorker(topic = "notificar-pago-pendiente")
+    @FlowableWorker(topic = "error_comprobante")
     public void notificarPendiente(AcquiredExternalWorkerJob job) {
         Map<String, Object> vars = job.getVariables();
         String numeroPedido = str(vars.get("nPedido"));
