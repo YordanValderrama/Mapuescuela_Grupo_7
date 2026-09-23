@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapuescuela - Datos del Pedido</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <nav class="navbar shadow-sm">
+    <div class="container justify-content-center">
+      <a class="navbar-brand d-flex align-items-center m-0" href="catalogo.html">
+        <img src="logo.png" alt="Mapuescuela" class="brand-logo" onerror="this.style.display='none'; document.getElementById('alt-brand-text').style.display='block';">
+        <span id="alt-brand-text" style="display:none; color: var(--primary-blue); font-weight: 700; font-size: 1.3rem;">Mapuescuela</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="stepper-container">
+    <div class="stepper-line"></div>
+    <div class="stepper-item active">
+      <div class="stepper-circle">1</div>
+      <div class="stepper-title">Datos del Pedido</div>
+    </div>
+    <div class="stepper-item">
+      <div class="stepper-circle">2</div>
+      <div class="stepper-title">Pago y Comprobante</div>
+    </div>
+  </div>
+
+  <div class="container mb-5" style="max-width: 850px;">
+    <div class="card card-main">
+      <div class="card-header card-top d-flex align-items-center">
+        <i class="bi bi-person-lines-fill me-2 fs-5"></i>
+        <span>Formulario de Compra - Datos del Cliente</span>
+      </div>
+      <div class="card-body p-4 p-md-5">
+
+        <div class="section-title">
+          <i class="bi bi-bag-check me-2"></i>1. Tu producto
+        </div>
+        <div id="resumenCarrito" class="summary-card p-3 mb-4"></div>
+
+        <form id="formPedido">
+          <div class="section-title">
+            <i class="bi bi-person me-2"></i>2. Datos Personales
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="nombreCompleto" class="form-label">Nombre Completo *</label>
+              <input type="text" class="form-control" id="nombreCompleto" name="nombreCompleto" placeholder="Ej: Marcela Pérez" required>
+            </div>
+            <div class="col-md-6">
+              <label for="rUT" class="form-label">RUT *</label>
+              <input type="text" class="form-control" id="rUT" name="rUT" placeholder="12.345.678-9" required>
+            </div>
+            <div class="col-md-6">
+              <label for="telefono" class="form-label">Teléfono *</label>
+              <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="+56 9 1234 5678" required>
+            </div>
+            <div class="col-md-6">
+              <label for="correoElectronico" class="form-label">Correo Electrónico *</label>
+              <input type="email" class="form-control" id="correoElectronico" name="correoElectronico" placeholder="cliente@correo.com" required>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <i class="bi bi-truck me-2"></i>3. Modalidad de Entrega
+          </div>
+          <div class="mb-4">
+            <label class="delivery-card d-flex align-items-center" for="modalidadTienda">
+              <input class="form-check-input me-3" type="radio" name="seleccioneModalidadDeEntrega" id="modalidadTienda" value="retiro_tienda" checked onchange="toggleDireccion()">
+              <div>
+                <strong class="d-block"><i class="bi bi-shop me-1 text-primary"></i> Retiro en tienda (Padre Hurtado)</strong>
+                <span class="text-muted small">Sin costo adicional en el punto de retiro oficial.</span>
+              </div>
+            </label>
+            <label class="delivery-card d-flex align-items-center" for="modalidadDomicilio">
+              <input class="form-check-input me-3" type="radio" name="seleccioneModalidadDeEntrega" id="modalidadDomicilio" value="reparto_domicilio" onchange="toggleDireccion()">
+              <div>
+                <strong class="d-block"><i class="bi bi-box-seam me-1 text-primary"></i> Reparto a domicilio</strong>
+                <span class="text-muted small">Despacho directo a la dirección especificada.</span>
+              </div>
+            </label>
+          </div>
+
+          <div id="seccionDireccion">
+            <div class="section-title d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-geo-alt me-2"></i>4. Dirección de Entrega</span>
+              <span id="badgeOpcional" class="badge bg-light text-muted fw-normal">Opcional para retiro en tienda</span>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-12">
+                <label for="direccion" class="form-label">Calle y Número</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Av. Principal #123, Depto 402">
+              </div>
+              <div class="col-md-6">
+                <label for="region" class="form-label">Región</label>
+                <input type="text" class="form-control" id="region" name="region" value="Región Metropolitana">
+              </div>
+              <div class="col-md-6">
+                <label for="comuna" class="form-label">Comuna</label>
+                <input type="text" class="form-control" id="comuna" name="comuna" placeholder="Padre Hurtado">
+              </div>
+            </div>
+          </div>
+
+          <div id="msgErrorPedido" class="alert alert-danger d-none" role="alert"></div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-blue" id="btnGenerarPedido">
+              Generar Pedido y Continuar <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const carrito = getCarrito();
+    if (!carrito) {
+      window.location.href = 'carrito.html';
+    } else {
+      const precio = PRECIOS[carrito.producto] || 5000;
+      document.getElementById('resumenCarrito').innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong class="d-block">${carrito.producto}</strong>
+            <span class="text-muted small">Cantidad: ${carrito.cantidad}</span>
+          </div>
+          <div class="text-end">
+            <strong class="text-success">${formatearCLP(precio * carrito.cantidad)}</strong>
+            <a href="carrito.html" class="d-block small">Cambiar</a>
+          </div>
+        </div>`;
+    }
+
+    function toggleDireccion() {
+      const esDomicilio = document.getElementById('modalidadDomicilio').checked;
+      const inputDireccion = document.getElementById('direccion');
+      const badge = document.getElementById('badgeOpcional');
+      if (esDomicilio) {
+        inputDireccion.required = true;
+        badge.innerText = 'Obligatorio para reparto';
+        badge.className = 'badge bg-danger-subtle text-danger fw-normal';
+      } else {
+        inputDireccion.required = false;
+        badge.innerText = 'Opcional para retiro en tienda';
+        badge.className = 'badge bg-light text-muted fw-normal';
+      }
+    }
+
+    document.getElementById('formPedido').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnGenerarPedido');
+      const msgError = document.getElementById('msgErrorPedido');
+      msgError.classList.add('d-none');
+
+      const pedido = {
+        nombreCliente: document.getElementById('nombreCompleto').value,
+        correoCliente: document.getElementById('correoElectronico').value,
+        rutCliente: document.getElementById('rUT').value.trim(),
+        telefonoCliente: document.getElementById('telefono').value.trim(),
+        direccion: document.getElementById('direccion').value.trim(),
+        region: document.getElementById('region').value.trim(),
+        comuna: document.getElementById('comuna').value.trim(),
+        producto: carrito.producto,
+        cantidad: carrito.cantidad,
+        modalidadEntrega: document.querySelector('input[name="seleccioneModalidadDeEntrega"]:checked').value
+      };
+
+      btn.disabled = true;
+      btn.innerText = 'Generando pedido...';
+
+      try {
+        const datos = await crearPedido(pedido);
+        setPedidoActual(datos.idPedido);
+        limpiarCarrito();
+
+        const params = new URLSearchParams({
+          nPedido: datos.idPedido,
+          producto: datos.producto,
+          cantidad: datos.cantidad,
+          nombreCompleto: pedido.nombreCliente,
+          modalidad: pedido.modalidadEntrega
+        });
+        window.location.href = `pantalla2.html?${params.toString()}`;
+      } catch (error) {
+        msgError.innerText = 'No se pudo conectar con el servidor (' + error.message + '). '
+            + 'Verifica que mapuescuela-backend esté corriendo en ' + API_BASE_URL + '.';
+        msgError.classList.remove('d-none');
+        btn.disabled = false;
+        btn.innerText = 'Generar Pedido y Continuar';
+      }
+    });
+  </script>
+</body>
+</html>

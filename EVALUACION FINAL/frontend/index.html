@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mapuescuela | Inicio</title>
+  <link rel="stylesheet" href="estilos.css">
+  <style>body{min-height:100vh;background:#f4f7fa;font-family:Arial,sans-serif;color:#163750}main{max-width:850px;margin:8vh auto;padding:24px}.hero{text-align:center;margin-bottom:36px}.hero img{max-height:90px}.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}.role{background:white;border:1px solid #d8e2e9;border-radius:16px;padding:28px;box-shadow:0 5px 20px #102b3910}.role h2{font-size:1.4rem}.role p{line-height:1.5;min-height:70px}.btn-role{display:inline-block;padding:12px 18px;background:#087da4;color:white;border-radius:9px;text-decoration:none;font-weight:bold}.btn-role:hover{background:#075f7b;color:white}.secondary{background:#31516a}.small{font-size:.9rem;color:#526779}.recent{margin-top:18px}</style>
+</head>
+<body><main>
+  <div class="hero"><img src="logo.png" alt="Mapuescuela"><h1>Bienvenido a Mapuescuela</h1><p>Elige cómo quieres ingresar.</p></div>
+  <div class="roles">
+    <section class="role"><h2>Cliente</h2><p>Explora productos, realiza un pedido, adjunta el comprobante y consulta su estado.</p><a class="btn-role" href="catalogo.html">Entrar como cliente</a><div class="recent" id="ultimoPedido"></div></section>
+    <section class="role"><h2>Voluntario</h2><p>Busca un pedido por número, revisa su comprobante y registra la decisión de pago.</p><a class="btn-role secondary" href="pantalla3.html">Revisar pedidos</a> <a class="btn-role secondary" href="registrar-retiro.html" style="margin-top:10px">Registrar retiro</a> <a class="btn-role secondary" href="registrar-despacho.html" style="margin-top:10px">Registrar despacho</a> <a class="btn-role secondary" href="gestionar-productos.html" style="margin-top:10px">Gestionar productos</a><p class="small">Panel de demostración: aún no tiene inicio de sesión ni permisos por rol.</p></section>
+  </div>
+  <p class="small" id="estadoBackend" aria-live="polite"></p>
+</main><script src="api.js"></script><script>
+  const actual = getPedidoActual();
+  if (actual) {
+    const enlace = document.createElement('a');
+    enlace.href = 'pantalla-esperando.html?nPedido=' + encodeURIComponent(actual);
+    enlace.textContent = 'Consultar mi último pedido (' + actual + ')';
+    document.getElementById('ultimoPedido').appendChild(enlace);
+  }
+  fetch(API_BASE_URL + '/pedidos/__estado__').then(() => {
+    document.getElementById('estadoBackend').textContent = 'Servidor local disponible.';
+  }).catch(() => {
+    document.getElementById('estadoBackend').textContent = 'Inicia el backend con mvn spring-boot:run antes de realizar pedidos.';
+  });
+</script></body></html>
