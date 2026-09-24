@@ -28,7 +28,7 @@
       <p>Busca un pedido, consulta el comprobante y registra la decisión de pago.</p>
     </header>
 
-    <!-- Buscador de pedido -->
+
     <div class="card card-main mb-3">
       <div class="card-body p-3 d-flex gap-2">
         <input type="text" id="inputBuscarPedido" class="form-control" placeholder="Escribe o pega el N° de pedido (ej: PED-1789...)">
@@ -77,10 +77,10 @@
             <div class="section-title"><i class="bi bi-check2-circle me-2"></i>3. Decisión de Pago</div>
 
             <div class="alert alert-info small">
-              La decisión se enviará a Flowable y actualizará el estado del pedido. El inventario se descuenta cuando el proceso ejecute su tarea correspondiente.
+              Al confirmar el pago se actualizará el pedido y se descontará la cantidad del inventario.
             </div>
 
-            <p id="estadoFlujo" class="small text-muted" role="status">Consulta un pedido para ver su etapa en Flowable.</p>
+            <p id="estadoFlujo" class="small text-muted" role="status">Consulta un pedido para ver el estado de la revisión.</p>
 
             <form id="formValidacion">
               <label class="form-label fw-medium text-dark mb-2">Confirmación de Pago: *</label>
@@ -173,12 +173,12 @@
       try {
         const res = await fetch(`${API_BASE_URL}/pedidos/${encodeURIComponent(pedidoActual.idPedido)}/etapa-flowable`);
         const datos = await res.json();
-        if (!res.ok) throw new Error(datos.mensaje || 'No se pudo consultar Flowable.');
+        if (!res.ok) throw new Error(datos.mensaje || 'No se pudo consultar el estado del pedido.');
         if (datos.revisionDisponible) {
           estado.textContent = 'El comprobante está listo para revisión.';
           boton.disabled = false;
         } else {
-          estado.textContent = 'Flowable está avanzando las etapas previas (' + datos.etapa + '). La pantalla se actualizará automáticamente.';
+          estado.textContent = 'El pedido está avanzando. La pantalla se actualizará automáticamente.';
         }
       } catch (error) {
         estado.textContent = error.message;
@@ -191,7 +191,6 @@
       if (id) cargarPedido(id);
     });
 
-    // Si llega con ?nPedido=... en la URL, carga directo.
     const params = new URLSearchParams(window.location.search);
     const nPedidoUrl = params.get('nPedido') || getPedidoActual();
     if (nPedidoUrl) {
@@ -212,7 +211,7 @@
       try {
         const respuesta = await revisarComprobante(pedidoActual.idPedido, decision, document.getElementById('estadoDelPago').value.trim());
         feedback.className = 'alert alert-success mt-3 small';
-        feedback.textContent = respuesta.mensaje + ' Estado: ' + respuesta.estadoPago + '. Puedes consultar el inventario cuando el proceso avance.';
+        feedback.textContent = 'Revisión guardada. Estado: ' + respuesta.estadoPago + '. El inventario se actualizará al avanzar el pedido.';
         await cargarPedido(pedidoActual.idPedido);
       } catch (err) {
         feedback.className = 'alert alert-danger mt-3 small';

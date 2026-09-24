@@ -56,7 +56,6 @@
     const nPedido = params.get('nPedido');
     document.getElementById('nPedido').innerText = nPedido || '--';
 
-    // Muestra el motivo real que dejó el voluntario, si existe.
     (async () => {
       const notificaciones = await obtenerNotificaciones(nPedido);
       const ultima = notificaciones.find(n => n.tipo === 'PAGO_PENDIENTE');

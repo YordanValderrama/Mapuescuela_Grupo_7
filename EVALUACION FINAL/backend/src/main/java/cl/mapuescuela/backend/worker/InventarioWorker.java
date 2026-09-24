@@ -6,16 +6,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-/**
- * Worker de inventario.
- *
- * Actualizado: ya existe InventarioResource (POST /inventario/descontar),
- * así que este worker deja de ser un stub y llama al endpoint real,
- * reutilizando post(...) heredado de BaseWorker. El producto y la
- * cantidad se toman de las variables del proceso; si no vienen definidas
- * (MVP sin modelo de carrito real todavía), se usa "PRODUCTO_PRUEBA" y
- * cantidad 1, igual que hace BaseWorker#construirPedido.
- */
+
+
+
+
+
+
+
+
+
+
 @Component
 public class InventarioWorker extends BaseWorker {
 

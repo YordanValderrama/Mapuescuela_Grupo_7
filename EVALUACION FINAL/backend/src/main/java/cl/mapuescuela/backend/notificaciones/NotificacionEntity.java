@@ -15,10 +15,10 @@ public class NotificacionEntity {
     private String idPedido;
 
     @Column(name = "tipo")
-    private String tipo; // PAGO_APROBADO | PAGO_RECHAZADO | PAGO_PENDIENTE | ENVIO_DESPACHADO
+    private String tipo; 
 
     @Column(name = "destinatario")
-    private String destinatario; // correo del cliente (se guarda como referencia, no se envía nada)
+    private String destinatario; 
 
     @Column(name = "asunto")
     private String asunto;

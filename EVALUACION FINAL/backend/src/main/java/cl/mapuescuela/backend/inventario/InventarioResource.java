@@ -11,15 +11,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Equivalente a PedidoResource pero para el dominio de inventario.
- * Cierra el TODO documentado en InventarioWorker / README-InventarioWorker.md:
- * ya existe un endpoint real que el worker "actualizar-inventario" puede
- * invocar en vez de solo loguear una advertencia.
- *
- * Igual que PedidoResource, no usa @ApplicationPath: queda expuesto en la
- * raíz (http://localhost:<puerto>/inventario/...).
- */
+
+
+
+
+
+
+
+
+
 @Path("inventario")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -86,13 +86,13 @@ public class InventarioResource {
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
-    /**
-     * Descuenta stock de un producto (paso "Actualizar inventario" del
-     * BPMN, topic actualizar-inventario). Si el producto no existe todavía
-     * en la tabla, se crea con stock 0 y queda un registro explícito de
-     * que se intentó descontar sin stock inicial cargado (MVP: la carga
-     * inicial de stock no está definida todavía).
-     */
+
+
+
+
+
+
+
     @POST
     @Path("descontar")
     @Transactional
@@ -134,11 +134,11 @@ public class InventarioResource {
         return Response.ok(respuesta).build();
     }
 
-    /**
-     * Libera stock previamente reservado (usado cuando se cancela un
-     * pedido por vencimiento de las 24h, o se rechaza un pago después de
-     * haber descontado inventario).
-     */
+
+
+
+
+
     @POST
     @Path("liberar")
     @Transactional

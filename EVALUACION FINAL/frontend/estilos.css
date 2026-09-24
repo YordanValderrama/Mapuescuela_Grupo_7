@@ -258,7 +258,7 @@ body {
   height: 3.5rem;
 }
 
-/* Cabecera y títulos del panel de voluntariado. */
+
 .volunteer-nav .container { max-width: 920px; min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .volunteer-brand { display: inline-flex; align-items: center; gap: 10px; color: #123b56; font-size: 1.12rem; font-weight: 800; text-decoration: none; letter-spacing: -.02em; }
 .volunteer-brand img { width: 38px; height: 38px; object-fit: contain; }

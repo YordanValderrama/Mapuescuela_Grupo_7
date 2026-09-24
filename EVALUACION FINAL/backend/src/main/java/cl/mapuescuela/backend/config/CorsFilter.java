@@ -7,14 +7,14 @@ import jakarta.ws.rs.ext.Provider;
 
 import java.io.IOException;
 
-/**
- * Sin esto, pantalla1.html / pantalla2.html no pueden llamar al backend
- * si se abren directo desde el disco (file://) o desde un servidor
- * estático en otro puerto: el navegador bloquea la petición por CORS.
- *
- * Es una configuración de desarrollo/demo (permite cualquier origen);
- * para un despliegue real conviene restringirlo al dominio del frontend.
- */
+
+
+
+
+
+
+
+
 @Provider
 public class CorsFilter implements ContainerResponseFilter {
 

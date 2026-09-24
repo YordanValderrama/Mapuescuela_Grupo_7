@@ -66,6 +66,20 @@
       document.getElementById('mensajeEntrega').innerHTML = esDomicilio
         ? '<i class="bi bi-truck me-2"></i>Tu pedido está siendo preparado para despacho a domicilio. Te avisaremos cuando salga.'
         : '<i class="bi bi-shop me-2"></i>Tu pedido está listo para retiro en tienda (Av. Padre Hurtado #1234). Presenta tu número de pedido.';
+      if (esDomicilio) {
+        async function verificarDespacho() {
+          try {
+            const avisos = await obtenerNotificaciones(nPedido);
+            if (avisos.some(aviso => aviso.tipo === 'ENVIO_DESPACHADO')) {
+              window.location.replace('pantalla-despachado.html?nPedido=' + encodeURIComponent(nPedido));
+            }
+          } catch (error) {
+            console.error('No se pudo consultar el despacho.', error);
+          }
+        }
+        verificarDespacho();
+        setInterval(verificarDespacho, 5000);
+      }
     })();
   </script>
 </body>

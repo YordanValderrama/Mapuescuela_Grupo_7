@@ -11,16 +11,16 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-/**
- * Base común para los External Workers de Flowable.
- * Centraliza la llamada HTTP hacia el web service REST (PedidoResource)
- * para que PedidoWorkers, InventarioWorker y NotificacionWorkers no
- * repitan el boilerplate de RestTemplate.
- *
- * IMPORTANTE: PedidoResource no usa @ApplicationPath (queda expuesto en
- * la raíz vía JerseyConfig), así que baseUrl() apunta directo a
- * http://localhost:<puerto>, sin prefijo "/api/rest".
- */
+
+
+
+
+
+
+
+
+
+
 public abstract class BaseWorker {
 
     protected static final Logger log = LoggerFactory.getLogger(BaseWorker.class);
@@ -44,16 +44,16 @@ public abstract class BaseWorker {
         return (Map<String, Object>) respuesta;
     }
 
-    /**
-     * Arma el DTO real Pedido a partir de las variables del proceso.
-     *
-     * ACTUALIZADO (Entrega 3): ahora que pantalla1.html manda un producto
-     * real al crear el pedido (POST /pedidos), producto/cantidad se leen
-     * de las variables del proceso si vienen definidas. Si el proceso se
-     * inicia por otra vía que todavía no las envía (por ejemplo, un
-     * formulario de Flowable sin ese campo), se mantiene el valor de
-     * prueba de siempre como respaldo.
-     */
+
+
+
+
+
+
+
+
+
+
     protected Pedido construirPedido(Map<String, Object> vars) {
         Pedido pedido = new Pedido();
         pedido.setIdPedido(str(vars.get("nPedido")));

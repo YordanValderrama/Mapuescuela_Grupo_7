@@ -2,18 +2,18 @@ package cl.mapuescuela;
 
 import jakarta.persistence.*;
 
-/**
- * Entidad JPA que persiste el pedido en la base de datos.
- *
- * Antes, PedidoResource solo recibía un Pedido (DTO), lo modificaba en
- * memoria y devolvía la respuesta -- nada quedaba guardado. Es exactamente
- * lo que señaló la retroalimentación de Entrega 2: "deben avanzar hacia
- * la persistencia de la información utilizando una base de datos real".
- *
- * Se usa idPedido (String, ej. "PED-1735489201234") como clave primaria
- * en vez de un id autogenerado, porque ese es el identificador de negocio
- * que ya circula entre el frontend, el proceso BPMN y los workers.
- */
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "pedidos")
 public class PedidoEntity {
@@ -49,9 +49,9 @@ public class PedidoEntity {
     @Column(name = "nombre_archivo_comprobante")
     private String nombreArchivoComprobante;
 
-    // NUEVO: guarda el id de la instancia de proceso que Flowable devuelve
-    // al iniciarlo (ver FlowableProcessClient). Queda null si el proceso
-    // no pudo iniciarse (p. ej. token o definition-key sin configurar).
+
+
+
     @Column(name = "process_instance_id")
     private String processInstanceId;
 

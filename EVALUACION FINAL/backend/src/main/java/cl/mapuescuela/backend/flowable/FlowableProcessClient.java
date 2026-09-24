@@ -14,40 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * NUEVO -- cierra el hueco que señaló la retroalimentación de Entrega 3:
- * "ya debiese existir una integración con algún Web Service que permita
- * iniciar el proceso en el motor de Flowable" y "Proceso ejecutándose: 0/15".
- *
- * Hasta ahora, PedidoResource.crearPedido() solo guardaba el pedido en la
- * base de datos (SQLite) y nunca tocaba Flowable -- por eso, aunque los
- * External Workers (PedidoWorkers, NotificacionWorkers, InventarioWorker)
- * están listos para reclamar jobs, ningún proceso se llegaba a iniciar
- * cuando el cliente completaba el formulario. Esta clase hace la llamada
- * REST que falta: POST {base-url}{context-path}/runtime/process-instances.
- *
- * Reutiliza el mismo token que ya configuraron para el External Worker
- * (flowable.external.worker.rest.authentication.bearer.token), porque es
- * el mismo Personal Access Token de la cuenta de Flowable Trial.
- *
- * IMPORTANTE -- dos cosas que ustedes deben completar/verificar y que yo
- * no puedo adivinar sin acceso a su cuenta de Flowable Trial:
- *
- * 1. flowable.process.rest.definition-key: debe ser la "key" del proceso
- *    BPMN tal como aparece en Flowable (Apps -> Modeler, o en el XML del
- *    modelo, atributo id del elemento <process id="...">). Va como
- *    REEMPLAZAR_KEY_PROCESO hasta que lo completen.
- *
- * 2. flowable.process.rest.context-path: para el External Worker el
- *    prefijo que les funcionó fue "/work/external-job-api" (según el
- *    comentario que dejaron en application.properties). Para la Process
- *    REST API normal, la documentación de Flowable usa habitualmente
- *    "/process-api" (ver https://www.flowable.com/open-source/docs/bpmn/ch14-REST);
- *    en Flowable Trial es razonable que sea "/work/process-api", pero no
- *    pude confirmarlo sin credenciales reales. Si el POST devuelve 404,
- *    prueben variantes ahí (con y sin el prefijo "/work") y ajusten esa
- *    propiedad -- no hace falta tocar código.
- */
+
 @Component
 public class FlowableProcessClient {
 
@@ -64,15 +31,21 @@ public class FlowableProcessClient {
     @Value("${flowable.process.rest.definition-key}")
     private String processDefinitionKey;
 
-    // Variante TRIAL: bearer token, igual que el External Worker de
-    // arriba (flowable.external.worker.rest.authentication.bearer.token).
-    @Value("${flowable.external.worker.rest.authentication.bearer.token}")
-    private String bearerToken;
+    @Value("${flowable.process.rest.username}")
+    private String username;
 
-    /** Devuelve la tarea activa de una instancia para sincronizar las etapas del cliente. */
-    public Map<String, Object> tareaActiva(String processInstanceId) {
+    @Value("${flowable.process.rest.password}")
+    private String password;
+
+    private HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(bearerToken);
+        headers.setBasicAuth(username, password);
+        return headers;
+    }
+
+
+    public Map<String, Object> tareaActiva(String processInstanceId) {
+        HttpHeaders headers = headers();
         String url = UriComponentsBuilder.fromHttpUrl(baseUrl + contextPath + "/runtime/tasks")
                 .queryParam("processInstanceId", processInstanceId).queryParam("size", 3)
                 .build().encode().toUriString();
@@ -84,7 +57,7 @@ public class FlowableProcessClient {
         }
         if (tareas.isEmpty()) return null;
         if (tareas.size() != 1 || !(tareas.get(0) instanceof Map<?, ?> tarea)) {
-            throw new IllegalStateException("Hay más de una tarea activa; revisa el proceso en Flowable Work.");
+            throw new IllegalStateException("Hay más de una tarea activa en el proceso.");
         }
         @SuppressWarnings("unchecked")
         Map<String, Object> unica = (Map<String, Object>) tarea;
@@ -100,13 +73,13 @@ public class FlowableProcessClient {
         completarTarea(processInstanceId, clave, valores);
     }
 
-    /** Completa exclusivamente la tarea de entrega de la instancia indicada. */
+
     public void completarEntrega(String processInstanceId, String tipo, Map<String, Object> valores) {
         completarTarea(processInstanceId,
                 "RETIRO".equals(tipo) ? "ut_registrar_retiro" : "registraInformacionDespacho", valores);
     }
 
-    /** Aplica la decisión de la revisión a la instancia exacta del pedido. */
+
     public void completarRevision(String processInstanceId, String decision, String observaciones) {
         completarTarea(processInstanceId, "ut_revisar_comprobante",
                 Map.of("confirmarPago", decision, "estadoDelPago", observaciones));
@@ -116,8 +89,7 @@ public class FlowableProcessClient {
         if (processInstanceId == null || processInstanceId.isBlank()) {
             throw new IllegalStateException("El pedido no tiene una instancia de Flowable asociada.");
         }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(bearerToken);
+        HttpHeaders headers = headers();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String url = UriComponentsBuilder.fromHttpUrl(baseUrl + contextPath + "/runtime/tasks")
                 .queryParam("processInstanceId", processInstanceId)
@@ -148,18 +120,18 @@ public class FlowableProcessClient {
         }
     }
 
-    /**
-     * Inicia una instancia del proceso BPMN, pasando las variables
-     * iniciales del pedido. businessKey queda igual a nPedido para que
-     * la instancia sea fácil de encontrar en Flowable Work buscando por
-     * el número de pedido.
-     *
-     * No lanza excepción si falla: si Flowable Trial no está disponible
-     * o el token/definition-key todavía no están configurados, el pedido
-     * ya quedó guardado en la base de datos igual (ver PedidoResource),
-     * así que un error acá no debe tumbar la creación del pedido para el
-     * cliente -- solo se registra en el log.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
     public String iniciarProceso(String idPedido, Map<String, Object> variables) {
         if (processDefinitionKey == null || processDefinitionKey.isBlank()
                 || "REEMPLAZAR_KEY_PROCESO".equals(processDefinitionKey)) {
@@ -183,7 +155,7 @@ public class FlowableProcessClient {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(bearerToken);
+            headers.setBasicAuth(username, password);
             HttpEntity<Object> request = new HttpEntity<>(body, headers);
 
             String url = baseUrl + contextPath + "/runtime/process-instances";

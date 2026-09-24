@@ -24,18 +24,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * ACTUALIZADO (Entrega 3) a partir de la retroalimentación de Entrega 2:
- * "deben avanzar hacia la persistencia de la información utilizando una
- * base de datos real". Antes este recurso solo mutaba el DTO Pedido en
- * memoria; ahora todo se guarda en PedidoEntity via PedidoRepository.
- *
- * También se agrega el endpoint POST /pedidos (crearPedido), que es el
- * que el frontend (pantalla1.html) llama directamente al enviar el
- * formulario -- así se cierra el flujo interfaz -> Web Service ->
- * persistencia que pedía la retroalimentación, sin depender de que el
- * proceso BPMN ya esté corriendo para que exista un registro del pedido.
- */
+
+
+
+
+
+
+
+
+
+
+
+
 @Path("pedidos")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,12 +57,12 @@ public class PedidoResource {
     @Value("${mapuescuela.uploads.dir:./data/uploads}")
     private String uploadsDir;
 
-    /**
-     * Crea el pedido apenas el cliente completa el formulario (pantalla1).
-     * Genera el número de pedido acá mismo (mismo formato que
-     * PedidoWorkers#generarNumeroPedido) para que exista un identificador
-     * incluso si el proceso BPMN todavía no se ha iniciado.
-     */
+
+
+
+
+
+
     @POST
     @Transactional
     public Response crearPedido(Pedido pedido) {
@@ -99,13 +99,13 @@ public class PedidoResource {
         PedidoEntity entidad = aEntidad(pedido);
         pedidoRepository.save(entidad);
 
-        // NUEVO (post Entrega 3): esto es lo que faltaba para que el
-        // proceso BPMN realmente se ejecute -- antes crearPedido() solo
-        // guardaba en la base de datos y Flowable nunca se enteraba. Se
-        // pasa idPedido como variable "nPedido" para que el worker
-        // "generar-numero-pedido" reutilice este mismo número en vez de
-        // generar uno nuevo (ver PedidoWorkers), y así el pedido creado
-        // acá y la instancia de proceso queden correlacionados.
+
+
+
+
+
+
+
         Map<String, Object> variablesProceso = new LinkedHashMap<>();
         variablesProceso.put("nPedido", idPedido);
         variablesProceso.put("nombreCompleto", pedido.getNombreCliente());
@@ -180,7 +180,7 @@ public class PedidoResource {
         return Response.status(Response.Status.CREATED).entity(entregaRepository.save(entrega)).build();
     }
 
-    /** Se invoca después de guardar: permite reintentar si Flowable estuvo temporalmente inaccesible. */
+
     @POST
     @Path("{idPedido}/entrega/completar")
     public Response completarEntrega(@PathParam("idPedido") String idPedido) {
@@ -202,7 +202,7 @@ public class PedidoResource {
             valores.put("voluntarioQueEntregaPedido", entrega.getVoluntario());
             valores.put("rutVoluntario", entrega.getRutVoluntario());
             valores.put("observacionesDelRetiro", entrega.getObservaciones());
-            // El formulario Flowable define este campo como fecha, no fecha/hora.
+
             valores.put("fechaYHoraDeEntrega", entrega.getFechaRegistro().toLocalDate().toString());
         } else {
             valores.put("empresa", entrega.getEmpresa());
@@ -217,7 +217,7 @@ public class PedidoResource {
         }
     }
 
-    /** Completa la revisión BPMN antes de confirmar la decisión local. */
+
     @POST
     @Path("{idPedido}/revision")
     public Response revisarComprobante(@PathParam("idPedido") String idPedido, Map<String, Object> body) {
@@ -242,8 +242,8 @@ public class PedidoResource {
             return Response.status(Response.Status.CONFLICT)
                     .entity(Map.of("mensaje", e.getMessage())).build();
         }
-        // El worker de la rama volverá a establecer el mismo estado; hacerlo aquí
-        // ofrece una respuesta inmediata sin descontar stock fuera del BPMN.
+
+
         entidad.setEstadoPago(switch (decision) {
             case "pago_aprobado" -> "APROBADO";
             case "pago_rechazado" -> "RECHAZADO";
@@ -274,15 +274,15 @@ public class PedidoResource {
         }
     }
 
-    /**
-     * Recibe el archivo real del comprobante (multipart/form-data, campo
-     * "archivo") y lo guarda en disco, en la carpeta configurada por
-     * mapuescuela.uploads.dir. Deja el pedido en estado EN_REVISION.
-     *
-     * Reenviar un comprobante nuevo (después de un ERROR_COMPROBANTE)
-     * usa este mismo endpoint y limpia el error, porque siempre vuelve
-     * a dejar el estado en EN_REVISION.
-     */
+
+
+
+
+
+
+
+
+
     @POST
     @Path("{idPedido}/comprobante")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -333,11 +333,11 @@ public class PedidoResource {
         }
     }
 
-    /**
-     * Devuelve el archivo real del comprobante (para el botón "Ver
-     * Comprobante" del voluntario). NOT_FOUND si el pedido no existe o
-     * todavía no subió ningún archivo.
-     */
+
+
+
+
+
     @GET
     @Path("{idPedido}/comprobante")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM, "image/*", "application/pdf" })
@@ -431,13 +431,13 @@ public class PedidoResource {
         return Response.ok(respuesta).build();
     }
 
-    /**
-     * Endpoint propio para el caso "error en el comprobante" -- antes
-     * este caso solo generaba una notificación (tipo PAGO_PENDIENTE) sin
-     * cambiar el estado real del pedido. Ahora sí queda un estado
-     * consultable (ERROR_COMPROBANTE), y se limpia solo cuando el
-     * cliente reenvía el archivo por POST /pedidos/{idPedido}/comprobante.
-     */
+
+
+
+
+
+
+
     @POST
     @Path("marcar-error-comprobante")
     @Transactional
@@ -459,7 +459,7 @@ public class PedidoResource {
         return Response.ok(respuesta).build();
     }
 
-    // ---------- Utilidades ----------
+
 
     private PedidoEntity buscarOCrear(Pedido pedido) {
         Optional<PedidoEntity> existente = pedidoRepository.findById(pedido.getIdPedido());

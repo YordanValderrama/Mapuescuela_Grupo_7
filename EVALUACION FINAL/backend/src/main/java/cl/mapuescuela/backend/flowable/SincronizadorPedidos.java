@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Avanza las tareas del cliente cuando los datos reales ya están guardados. */
+
 @Component
 public class SincronizadorPedidos {
     private static final Logger log = LoggerFactory.getLogger(SincronizadorPedidos.class);
@@ -22,7 +22,7 @@ public class SincronizadorPedidos {
         this.flowable = flowable;
     }
 
-    // El worker que genera el número puede tardar en mover el proceso a la siguiente tarea.
+
     @Scheduled(fixedDelay = 12000, initialDelay = 6000)
     public void sincronizarPendientes() {
         for (PedidoEntity pedido : pedidos.findAll()) {
@@ -39,7 +39,7 @@ public class SincronizadorPedidos {
 
     private void sincronizar(PedidoEntity pedido) {
         Map<String, Object> tarea = flowable.tareaActiva(pedido.getProcessInstanceId());
-        if (tarea == null) return; // Un worker aún puede estar procesando el paso anterior.
+        if (tarea == null) return; 
         String clave = String.valueOf(tarea.get("taskDefinitionKey"));
         if ("ut_datos_personales_modalidad_entrega".equals(clave)) {
             if (vacio(pedido.getRutCliente()) || vacio(pedido.getTelefonoCliente())) return;
@@ -65,7 +65,7 @@ public class SincronizadorPedidos {
                             "nombreArchivoComprobante", pedido.getNombreArchivoComprobante()));
             log.info("Carga de comprobante confirmada en Flowable para {}", pedido.getIdPedido());
         }
-        // La revisión ut_revisar_comprobante sigue siendo una decisión del voluntario.
+
     }
 
     private boolean vacio(String valor) { return valor == null || valor.isBlank(); }

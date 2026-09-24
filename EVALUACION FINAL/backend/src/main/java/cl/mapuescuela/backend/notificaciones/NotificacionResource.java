@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * Notificaciones "dentro de la app": en vez de enviar un correo, cada
- * evento (pago aprobado/rechazado/pendiente, envío despachado) queda
- * guardado acá y se puede consultar por REST — por ejemplo desde una
- * pantalla de "Mis notificaciones" para el cliente, o un panel del
- * voluntario.
- */
+
+
+
+
+
+
+
 @Path("notificaciones")
 @Produces(MediaType.APPLICATION_JSON)
 @Component

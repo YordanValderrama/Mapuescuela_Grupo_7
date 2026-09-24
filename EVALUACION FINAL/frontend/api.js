@@ -1,11 +1,11 @@
-// =====================================================================
-// api.js -- compartido por todas las pantallas de Mapuescuela
-// =====================================================================
-// URL del backend real (mapuescuela-backend). Si corres el backend en
-// otro puerto/host, cambia solo esta línea.
+
+
+
+
+
 const API_BASE_URL = 'http://localhost:8081';
 
-// ---------- Llamadas reales a la API ----------
+
 
 async function crearPedido(pedido) {
   const res = await fetch(`${API_BASE_URL}/pedidos`, {
@@ -39,12 +39,12 @@ async function revisarComprobante(idPedido, decision, observaciones) {
     body: JSON.stringify({ decision, observaciones })
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.mensaje || 'No se completó la revisión en Flowable.');
+  if (!res.ok) throw new Error(data.mensaje || 'No se pudo completar la revisión.');
   return data;
 }
 
-// Sube el archivo real del comprobante (multipart/form-data). Sirve
-// tanto para la primera subida como para el reenvío tras un error.
+
+
 async function subirComprobante(idPedido, archivo) {
   const formData = new FormData();
   formData.append('archivo', archivo);
@@ -60,13 +60,13 @@ async function subirComprobante(idPedido, archivo) {
   return data;
 }
 
-// URL para mostrar/descargar el comprobante real (usada por pantalla3).
+
 function urlComprobante(idPedido) {
   return `${API_BASE_URL}/pedidos/${encodeURIComponent(idPedido)}/comprobante`;
 }
 
-// ---------- Carrito (una sola línea, porque el backend maneja un
-// producto + una cantidad por pedido, no una lista de ítems) ----------
+
+
 
 const CARRITO_KEY = 'mapuescuela_carrito';
 const PEDIDO_ACTUAL_KEY = 'mapuescuela_pedido_actual';
@@ -92,7 +92,7 @@ function getPedidoActual() {
   return sessionStorage.getItem(PEDIDO_ACTUAL_KEY);
 }
 
-// Precios referenciales, compartidos entre catálogo, carrito y resumen.
+
 const PRECIOS = {
   'Cuaderno Mapuche Artesanal': 4500,
   'Juego Didáctico Mapudungun': 8990,
@@ -115,11 +115,11 @@ function formatearCLP(valor) {
   return `$${valor.toLocaleString('es-CL')}`;
 }
 
-// Navegación común para volver al inicio desde cualquier pantalla.
+
 document.addEventListener('DOMContentLoaded', () => {
   const nav = document.querySelector('nav.navbar');
   if (!nav || location.pathname.endsWith('/index.html')) return;
-  // Las pantallas de voluntariado ya incluyen Inicio en su propia barra.
+
   if (nav.querySelector('a[href="index.html"]')) return;
   const home = document.createElement('a');
   home.href = 'index.html';

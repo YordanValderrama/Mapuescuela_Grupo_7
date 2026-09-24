@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Workers de notificación al cliente. Ninguno toca el estado del pedido
- * (eso es de PedidoWorkers) — acá solo se registra el evento como una
- * notificación "dentro de la app" (tabla notificaciones, consultable vía
- * NotificacionResource: GET /notificaciones y
- * GET /notificaciones/pedido/{idPedido}), en vez de enviar un correo.
- * Se eliminó la dependencia de correo SMTP (Gmail) por la fragilidad de
- * red observada (timeouts, puertos bloqueados).
- */
+
+
+
+
+
+
+
+
+
 @Component
 public class NotificacionWorkers extends BaseWorker {
 
@@ -58,12 +58,12 @@ public class NotificacionWorkers extends BaseWorker {
         String mensaje = "Tu comprobante no pudo ser validado, por favor reenvíalo."
                 + (motivo != null ? " Detalle: " + motivo : "");
 
-        // ACTUALIZADO: antes esto solo dejaba una notificación en la
-        // tabla "notificaciones" sin tocar el estado real del pedido.
-        // Ahora también llama al endpoint real, para que el pedido quede
-        // en ERROR_COMPROBANTE y el frontend del cliente lo detecte
-        // consultando GET /pedidos/{id} en vez de tener que leer
-        // notificaciones.
+
+
+
+
+
+
         post("/pedidos/marcar-error-comprobante", Map.of("idPedido", numeroPedido));
 
         guardarNotificacion(numeroPedido, "PAGO_PENDIENTE", str(vars.get("correoElectronico")),
@@ -83,7 +83,7 @@ public class NotificacionWorkers extends BaseWorker {
                 "Tu pedido fue despachado - Pedido " + numeroPedido, mensaje);
     }
 
-    // ---------- Utilidad ----------
+
 
     private void guardarNotificacion(String idPedido, String tipo, String destinatario,
                                       String asunto, String mensaje) {
@@ -99,9 +99,9 @@ public class NotificacionWorkers extends BaseWorker {
             notificacionRepository.save(notificacion);
             log.info("Notificación [{}] guardada para pedido {}: {}", tipo, idPedido, asunto);
         } catch (Exception e) {
-            // No relanzamos: un fallo al guardar la notificación no
-            // debería marcar el job como fallido y bloquear el resto
-            // del proceso (igual criterio que teníamos con el correo).
+
+
+
             log.error("No se pudo guardar la notificación [{}] para pedido {}: {}",
                     tipo, idPedido, e.getMessage(), e);
         }
